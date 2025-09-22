@@ -1,62 +1,102 @@
-import { motion } from "framer-motion";
-
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 
 function Projects() {
   const projectData = [
     {
       title: "AI Powered Notes App",
       description:
-        "A smart note-taking app that leverages AI to summarize, organize, and search notes seamlessly. It helps users boost productivity with intelligent suggestions and clean UI for efficient learning.",
+        "A smart note-taking app that leverages AI to summarize, organize, and search notes seamlessly. Boost productivity with intelligent suggestions and clean UI.",
       image: "/Ai_notes.jpg",
       liveLink: "https://ai-notes-front-end.vercel.app/",
     },
     {
       title: "Netflix Clone (with Firebase & Backend)",
       description:
-        "A Netflix-inspired streaming platform built with React, Firebase authentication, and backend integration. It supports user login, watchlist, and real-time movie data fetching with a responsive UI.",
+        "A Netflix-inspired platform built with React and Firebase. Supports login, watchlist, real-time movie data, and responsive UI.",
       image: "/Netlfix.png",
       liveLink: "https://netflix-clone-vert-delta.vercel.app/",
     },
     {
       title: "E-Commerce Platform",
       description:
-        "A modern e-commerce web app featuring product listings, cart, and checkout flow. Built with MERN stack ensuring scalability, responsiveness, and a smooth shopping experience for users.",
-      image: "/Ecom.png", // placeholder for project image,
+        "A modern MERN e-commerce app with product listings, cart, and checkout flow. Smooth and scalable shopping experience.",
+      image: "/Ecom.png",
       liveLink: "https://ecom-two-pink-20.vercel.app/",
     },
   ];
 
+  const [current, setCurrent] = useState(0);
+
+  const nextProject = () => {
+    setCurrent((prev) => (prev + 1) % projectData.length);
+  };
+  const prevProject = () => {
+    setCurrent((prev) => (prev - 1 + projectData.length) % projectData.length);
+  };
+
+  const project = projectData[current];
+
   return (
-    <section className="py-20 px-10 bg-gray-800 min-h-screen">
-      <h3 className="text-3xl font-bold mb-10 text-center">Projects</h3>
-      <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-        {projectData.map((project, index) => (
+    <section className="py-20 px-6 md:px-10 bg-black min-h-screen flex flex-col items-center">
+     
+
+      <div className="relative w-full max-w-xl">
+        <AnimatePresence mode="wait">
           <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.2 }}
-            whileHover={{ scale: 1.05 }}
-            className="rounded-2xl overflow-hidden shadow-lg bg-gray-900 border border-gray-700 hover:shadow-2xl transition-all"
+            key={project.title}
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -100 }}
+            transition={{ duration: 0.6 }}
+            className="bg-gray-900 rounded-2xl overflow-hidden shadow-2xl border border-gray-700"
           >
-            {/* Image */}
-            <div className="h-40 bg-gray-700">
+            <div className="h-64">
               <img
                 src={project.image}
                 alt={project.title}
-                loading="lazy"
-                className="w-full h-full object-cover block"
+                className="w-full h-full object-cover"
               />
             </div>
-
             <div className="p-6">
-              <h4 className="text-xl font-semibold mb-3">{project.title}</h4>
+              <h4 className="text-xl font-semibold mb-3 text-white">{project.title}</h4>
               <p className="text-gray-400 mb-4">{project.description}</p>
-              <button className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-md transition" onClick={() => window.open(project.liveLink, '_blank')}>
+              <button
+                onClick={() => window.open(project.liveLink, "_blank")}
+                className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-md text-white transition"
+              >
                 See Live
               </button>
             </div>
           </motion.div>
+        </AnimatePresence>
+
+        {/* Navigation Buttons */}
+        <div className="absolute top-1/2 -translate-y-1/2 w-full flex justify-between px-2">
+          <button
+            onClick={prevProject}
+            className="bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-full shadow-md"
+          >
+            ◀
+          </button>
+          <button
+            onClick={nextProject}
+            className="bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-full shadow-md"
+          >
+            ▶
+          </button>
+        </div>
+      </div>
+
+      {/* Pagination Dots */}
+      <div className="flex gap-2 mt-6">
+        {projectData.map((_, i) => (
+          <span
+            key={i}
+            className={`h-2 w-2 rounded-full ${
+              i === current ? "bg-blue-500" : "bg-gray-600"
+            }`}
+          />
         ))}
       </div>
     </section>
