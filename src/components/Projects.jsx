@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
+import { title } from "framer-motion/client";
 import { useState } from "react";
 
 function Projects() {
@@ -24,6 +25,18 @@ function Projects() {
       image: "/Ecom.png",
       liveLink: "https://ecom-two-pink-20.vercel.app/",
     },
+    {
+      title: "Abdullah Artificial Jewels",
+      description : "A frontend based Artificia jewellery shop, where user can find their desrired jewel item and contact the shop owner for making an order",
+      image: "/public/shop.png",
+      liveLink: "https://shop-neon-nine.vercel.app/"
+    },
+    {
+      title: "Real-Time Chat Application",
+      description: "A chat app developed using MERN stack with Websockets(socket.io), where user can signup or login and chat with their friends",
+      image: "/Chat.png",
+      liveLink: "https://amaan-chat-app-fe.vercel.app/"
+    }
   ];
 
   const [current, setCurrent] = useState(0);
@@ -38,68 +51,85 @@ function Projects() {
   const project = projectData[current];
 
   return (
-    <section className="py-20 px-6 md:px-10 bg-black min-h-screen flex flex-col items-center">
-     
-
-      <div className="relative w-full max-w-xl">
-        <AnimatePresence mode="wait">
+    <section className="py-20 px-6 mt-[-50px] bg-black min-h-screen flex flex-col items-center justify-center">
+    <div className="relative w-full max-w-7xl">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={project.title}
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -40 }}
+          transition={{ duration: 0.6, ease: "easeInOut" }}
+          className="grid md:grid-cols-[35%_65%] bg-gray-900 rounded-3xl overflow-hidden shadow-2xl border border-gray-800"
+        >
+          {/* Left: Text Description */}
           <motion.div
-            key={project.title}
-            initial={{ opacity: 0, x: 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -100 }}
-            transition={{ duration: 0.6 }}
-            className="bg-gray-900 rounded-2xl overflow-hidden shadow-2xl border border-gray-700"
+            initial={{ x: -80, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="flex flex-col justify-center p-8 md:p-10 bg-gray-950/70 backdrop-blur-sm"
           >
-            <div className="h-64">
-              <img
-                src={project.image}
-                alt={project.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="p-6">
-              <h4 className="text-xl font-semibold mb-3 text-white">{project.title}</h4>
-              <p className="text-gray-400 mb-4">{project.description}</p>
-              <button
-                onClick={() => window.open(project.liveLink, "_blank")}
-                className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-md text-white transition"
-              >
-                See Live
-              </button>
-            </div>
+            <h4 className="text-3xl font-bold text-white mb-4 tracking-wide leading-snug">
+              {project.title}
+            </h4>
+            <p className="text-gray-400 mb-6 text-base md:text-lg leading-relaxed">
+              {project.description}
+            </p>
+            <button
+              onClick={() => window.open(project.liveLink, "_blank")}
+              className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 px-6 py-3 rounded-lg text-white font-semibold shadow-md transition-transform hover:scale-105"
+            >
+              See Live →
+            </button>
           </motion.div>
-        </AnimatePresence>
 
-        {/* Navigation Buttons */}
-        <div className="absolute top-1/2 -translate-y-1/2 w-full flex justify-between px-2">
-          <button
-            onClick={prevProject}
-            className="bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-full shadow-md"
+          {/* Right: Image */}
+          <motion.div
+            initial={{ x: 100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="relative h-80 md:h-[28rem] lg:h-[32rem]"
           >
-            ◀
-          </button>
-          <button
-            onClick={nextProject}
-            className="bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-full shadow-md"
-          >
-            ▶
-          </button>
-        </div>
-      </div>
+            <img
+              src={project.image}
+              alt={project.title}
+              className="w-full h-full object-cover"
+            />
+            {/* optional gradient overlay for text contrast */}
+            <div className="absolute inset-0 bg-gradient-to-l from-transparent to-black/40" />
+          </motion.div>
+        </motion.div>
+      </AnimatePresence>
 
-      {/* Pagination Dots */}
-      <div className="flex gap-2 mt-6">
-        {projectData.map((_, i) => (
-          <span
-            key={i}
-            className={`h-2 w-2 rounded-full ${
-              i === current ? "bg-blue-500" : "bg-gray-600"
-            }`}
-          />
-        ))}
+      {/* Navigation Buttons */}
+      <div className="absolute top-1/2 -translate-y-1/2 w-full flex justify-between px-2">
+        <button
+          onClick={prevProject}
+          className="bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-full shadow-lg transition-transform hover:scale-110"
+        >
+          ◀
+        </button>
+        <button
+          onClick={nextProject}
+          className="bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-full shadow-lg transition-transform hover:scale-110"
+        >
+          ▶
+        </button>
       </div>
-    </section>
+    </div>
+
+    {/* Pagination Dots */}
+    <div className="flex gap-3 mt-8">
+      {projectData.map((_, i) => (
+        <span
+          key={i}
+          className={`h-3 w-3 rounded-full transition-all duration-300 ${
+            i === current ? "bg-blue-500 scale-125" : "bg-gray-600 opacity-70"
+          }`}
+        />
+      ))}
+    </div>
+  </section>
   );
 }
 
