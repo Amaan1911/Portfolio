@@ -43,7 +43,7 @@ function About() {
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            className="px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-xl shadow-md font-medium transition"
+            className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-xl shadow-md font-medium transition text-white"
           >
             Let’s Connect 🚀
           </motion.button>
