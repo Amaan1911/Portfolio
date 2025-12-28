@@ -8,92 +8,120 @@ import {
   SiHtml5,
   SiCss3,
   SiJavascript,
+  SiTypescript,
+  SiTailwindcss,
 } from "react-icons/si";
 
 function Home() {
   const navigate = useNavigate();
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+    }
+  };
+
+  const techStack = [
+    { icon: SiReact, color: "#61DAFB" },
+    { icon: SiNodedotjs, color: "#339933" },
+    { icon: SiMongodb, color: "#47A248" },
+    { icon: SiExpress, color: "#ffffff" },
+    { icon: SiJavascript, color: "#F7DF1E" },
+    { icon: SiTypescript, color: "#3178C6" },
+    { icon: SiTailwindcss, color: "#06B6D4" },
+  ];
+
   return (
-    <section className="relative flex items-center justify-center min-h-screen overflow-hidden bg-black">
-      
-      {/* Dark translucent card for readable content */}
-      <div className="relative z-10 w-full max-w-4xl mx-auto px-6 py-20 rounded-3xl bg-gradient-to-br from-black/60 via-zinc-900/50 to-black/50 backdrop-blur-lg border border-white/6 shadow-2xl">
-        <motion.h1
-          className="text-center text-5xl sm:text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-cyan-300 via-indigo-400 to-fuchsia-400"
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8 }}
+    <section className="relative flex flex-col items-center justify-center min-h-[110vh] px-4 overflow-hidden pt-32 sm:pt-40 pb-20">
+
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="text-center z-10 max-w-5xl mx-auto"
+      >
+        {/* Status Badge */}
+        <motion.div
+          variants={itemVariants}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-12"
         >
-          Hi, I’m <span className="text-white">Amaan Sheikh</span> 👋
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+          </span>
+          <span className="text-sm font-mono tracking-widest text-gray-300 uppercase">Available for work</span>
+        </motion.div>
+
+        {/* Hero Title */}
+        <motion.h1
+          variants={itemVariants}
+          className="text-7xl sm:text-8xl md:text-9xl font-black tracking-tighter mb-8 bg-gradient-to-b from-white via-white to-gray-500 bg-clip-text text-transparent"
+        >
+          AMAAN
+          <br className="sm:hidden" />
+          <span className="sm:ml-4">SHEIKH</span>
         </motion.h1>
 
         <motion.p
-          className="mt-6 text-center text-gray-300 max-w-2xl mx-auto text-lg sm:text-xl leading-relaxed"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.25, duration: 0.8 }}
+          variants={itemVariants}
+          className="text-xl sm:text-2xl text-gray-400 max-w-2xl mx-auto leading-relaxed mb-12"
         >
-          MERN Stack developer crafting modern, accessible, and scalable web experiences —
-          React frontends, Node/Express APIs, and MongoDB data layers.
+          MERN Stack developer crafting <span className="text-white font-medium">modern</span>, <span className="text-white font-medium">accessible</span>, and <span className="text-white font-medium">scalable</span> web experiences.
         </motion.p>
 
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <motion.button
-            onClick={() => navigate("/projects")}
-            className="px-8 py-3 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold shadow-lg hover:scale-[1.04] transition-transform"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.96 }}
-          >
-            🚀 View My Work
-          </motion.button>
-
-          <motion.button
-            onClick={() => navigate("/contact")}
-            className="px-6 py-2 rounded-2xl border border-white/10 text-white/90 backdrop-blur-sm"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.96 }}
-          >
-            ✉️ Hire Me
-          </motion.button>
-        </div>
-
-        {/* Tech icons row */}
+        {/* Buttons */}
         <motion.div
-          className="mt-10 flex items-center justify-center gap-6 flex-wrap"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.45, duration: 0.8 }}
+          variants={itemVariants}
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20"
         >
-          {[SiReact, SiNodedotjs, SiExpress, SiMongodb, SiJavascript, SiHtml5, SiCss3].map((Icon, i) => (
-            <motion.div
-              key={i}
-              className="flex flex-col items-center gap-1 text-gray-200"
-              whileHover={{ y: -6 }}
-              transition={{ type: "spring", stiffness: 220, damping: 14 }}
-              style={{ minWidth: 56 }}
-            >
-              <div className="p-3 rounded-full bg-white/6 shadow-md">
-                <Icon size={28} className="text-white" />
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
+          <button
+            onClick={() => navigate("/projects")}
+            className="group relative px-8 py-4 rounded-full bg-white text-black font-bold text-lg overflow-hidden transition-transform hover:scale-105"
+          >
+            <span className="relative z-10">View My Work</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          </button>
 
-      {/* Subtle moving grid overlay for motion (decorative) */}
-      <motion.div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.12 }}
-        transition={{ duration: 1.2 }}
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)",
-          backgroundSize: "40px 40px, 40px 40px",
-          mixBlendMode: "overlay",
-        }}
-      />
+          <button
+            onClick={() => navigate("/contact")}
+            className="px-8 py-4 rounded-full border border-white/20 hover:bg-white/5 text-white font-medium text-lg transition-all hover:scale-105"
+          >
+            Contact Me
+          </button>
+        </motion.div>
+
+        {/* Tech Stack - Magnetic Effect Mockup */}
+        <motion.div variants={itemVariants} className="flex flex-col items-center gap-6">
+          <span className="text-sm font-mono text-gray-500 uppercase tracking-[0.2em]">Technology Stack</span>
+          <div className="flex flex-wrap justify-center gap-6">
+            {techStack.map((Tech, i) => (
+              <motion.div
+                key={i}
+                whileHover={{ y: -10, scale: 1.1 }}
+                className="p-4 rounded-2xl bg-white/5 border border-white/5  lg-[20px] backdrop-blur-sm cursor-pointer hover:bg-white/10 transition-colors"
+              >
+                <Tech.icon size={32} style={{ color: Tech.color }} />
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+      </motion.div>
+
     </section>
   );
 }

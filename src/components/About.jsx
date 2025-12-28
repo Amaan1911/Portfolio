@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
-import Amaan from "../../public/Amaan.jpg";
+
 
 function About() {
   return (
-    <section className="py-20 px-6 md:px-16 bg-black text-white min-h-screen flex items-center">
+    <section className="py-20 px-6 md:px-16 min-h-screen flex items-center relative z-10">
       <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-        
+
         {/* Profile Image */}
         <motion.div
           initial={{ opacity: 0, x: -100 }}
@@ -15,9 +15,9 @@ function About() {
           className="relative flex justify-center"
         >
           <img
-            src={Amaan}
+            src="/Amaan.jpg"
             alt="Amaan Sheikh"
-            className="w-56 h-56 md:w-72 md:h-72 rounded-full object-cover shadow-2xl border-4 border-gray-700"
+            className="w-56 h-56 md:w-72 md:h-72 rounded-full object-cover shadow-2xl border-4 border-gray-700/50"
           />
           {/* Vignette Glow */}
           <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-500/30 via-purple-500/20 to-transparent blur-3xl"></div>
@@ -35,9 +35,9 @@ function About() {
             About Me
           </h3>
           <p className="text-gray-300 text-lg leading-relaxed">
-            I'm a <span className="text-blue-400 font-semibold">MERN stack web developer</span> 
-            passionate about crafting modern, user-friendly applications.  
-            I love building interactive solutions that solve real-world problems, 
+            I'm a <span className="text-blue-400 font-semibold">MERN stack web developer</span>
+            passionate about crafting modern, user-friendly applications.
+            I love building interactive solutions that solve real-world problems,
             while continuously learning and adapting to new technologies.
           </p>
           <motion.button
