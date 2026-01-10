@@ -11,12 +11,27 @@
   --color-surface: #111111;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: 'Outfit', sans-serif;
   background-color: var(--color-background);
   color: #ffffff;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Hide default cursor on desktop for custom cursor effect */
+@media (pointer: fine) {
+  body {
+    cursor: none;
+  }
+  
+  a, button, input, textarea, select, [role="button"], [tabindex]:not([tabindex="-1"]) {
+    cursor: none;
+  }
 }
 
 /* Custom Scrollbar */

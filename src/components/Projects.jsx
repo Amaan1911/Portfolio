@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
+import { ArrowLeft, ArrowRight, ExternalLink, Play, Pause } from "lucide-react";
 import { BsWhatsapp } from "react-icons/bs";
 
 const projectData = [
@@ -51,6 +51,7 @@ const projectData = [
 function Projects() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [autoPlay, setAutoPlay] = useState(false);
 
   const nextProject = () => {
     setDirection(1);
@@ -61,6 +62,29 @@ function Projects() {
     setDirection(-1);
     setCurrentIndex((prev) => (prev - 1 + projectData.length) % projectData.length);
   };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.key === "ArrowLeft") prevProject();
+      if (e.key === "ArrowRight") nextProject();
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, []);
+
+  // Auto-play functionality
+  useEffect(() => {
+    if (!autoPlay) return;
+    
+    const interval = setInterval(() => {
+      setDirection(1);
+      setCurrentIndex((prev) => (prev + 1) % projectData.length);
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, [autoPlay]);
 
   const variants = {
     enter: (direction) => ({
@@ -129,47 +153,118 @@ function Projects() {
             transition={{ x: { type: "spring", stiffness: 300, damping: 30 }, opacity: { duration: 0.2 } }}
             className="absolute inset-0 flex items-center justify-center gap-16"
           >
-            <motion.div whileHover={{ rotateY: 5, rotateX: -5 }}
-              className="w-1/2 bg-white/5 border border-white/10 backdrop-blur-xl p-10 rounded-3xl shadow-2xl transform -rotate-3 hover:rotate-0 transition-transform duration-500">
-              <div className="flex flex-wrap gap-2 mb-6">
-                {currentProject.tech.map((t, i) => (
-                  <span key={i} className="px-3 py-1 bg-blue-500/20 text-blue-300 text-xs font-bold rounded-full uppercase tracking-wider border border-blue-500/20">
-                    {t}
-                  </span>
-                ))}
-              </div>
-              <h3 className="text-4xl font-bold text-white mb-4">{currentProject.title}</h3>
-              <p className="text-gray-400 text-lg mb-8">{currentProject.description}</p>
-              <div className="flex gap-4">
-                <a href={currentProject.liveLink} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-white text-black font-bold rounded-full hover:bg-blue-400 transition-colors">
-                  Visit Site <ExternalLink size={18} />
-                </a>
-                <a href="https://wa.me/qr/VYUIPCRU4S2ZF1" target="_blank" rel="noopener noreferrer"
-                  className="hidden md:inline-flex items-center gap-2 px-6 py-3 bg-white text-black font-bold rounded-full hover:bg-blue-400 transition-colors">
-                  <BsWhatsapp size={16} /> Hire Me
-                </a>
+            <motion.div
+              whileHover={{ rotateY: 5, rotateX: -5 }}
+              className="w-1/2 bg-white/5 border border-white/10 backdrop-blur-xl p-10 rounded-3xl shadow-2xl transform -rotate-3 hover:rotate-0 transition-transform duration-500 relative group overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="relative z-10">
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {currentProject.tech.map((t, i) => (
+                    <motion.span
+                      key={i}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: i * 0.1 }}
+                      className="px-3 py-1 bg-blue-500/20 text-blue-300 text-xs font-bold rounded-full uppercase tracking-wider border border-blue-500/20 hover:bg-blue-500/30 transition-colors"
+                    >
+                      {t}
+                    </motion.span>
+                  ))}
+                </div>
+                <h3 className="text-4xl font-bold text-white mb-4">{currentProject.title}</h3>
+                <p className="text-gray-400 text-lg mb-8 leading-relaxed">{currentProject.description}</p>
+                <div className="flex flex-wrap gap-4">
+                  <motion.a
+                    href={currentProject.liveLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(59, 130, 246, 0.4)" }}
+                    whileTap={{ scale: 0.95 }}
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-white text-black font-bold rounded-full hover:bg-blue-400 transition-colors group/link"
+                  >
+                    Visit Site <ExternalLink size={18} className="group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
+                  </motion.a>
+                  <motion.a
+                    href="https://wa.me/qr/VYUIPCRU4S2ZF1"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="hidden md:inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-full transition-all shadow-lg"
+                  >
+                    <BsWhatsapp size={16} /> Hire Me
+                  </motion.a>
+                </div>
               </div>
             </motion.div>
 
-            <motion.div whileHover={{ scale: 1.05 }}
-              className="w-1/2 h-full max-h-[400px] rounded-3xl overflow-hidden border-4 border-white/10 shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500 relative group">
-              <div style={{ backgroundImage: `url(${currentProject.image})` }}
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" />
+            <motion.div
+              whileHover={{ scale: 1.05, rotate: 0 }}
+              className="w-1/2 h-full max-h-[400px] rounded-3xl overflow-hidden border-4 border-white/10 shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500 relative group cursor-pointer"
+              onClick={() => window.open(currentProject.liveLink, "_blank")}
+            >
+              <div
+                style={{ backgroundImage: `url(${currentProject.image})` }}
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute bottom-4 left-4 right-4 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                <span className="text-white text-sm font-medium flex items-center gap-2">
+                  Click to visit <ExternalLink size={16} />
+                </span>
+              </div>
             </motion.div>
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* Navigation */}
-      <div className="flex gap-6 z-20 mt-4">
-        <button onClick={prevProject} className="p-4 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:scale-110 transition-all">
-          <ArrowLeft size={24} />
-        </button>
-        <button onClick={nextProject} className="p-4 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:scale-110 transition-all">
-          <ArrowRight size={24} />
-        </button>
+      {/* Navigation Controls */}
+      <div className="flex items-center justify-center gap-4 z-20 mt-8">
+        <motion.button
+          onClick={prevProject}
+          whileHover={{ scale: 1.1, x: -5 }}
+          whileTap={{ scale: 0.9 }}
+          className="p-4 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:border-white/20 transition-all group"
+          aria-label="Previous project"
+        >
+          <ArrowLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
+        </motion.button>
+
+        <motion.button
+          onClick={() => setAutoPlay(!autoPlay)}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className={`p-4 rounded-full border transition-all ${
+            autoPlay
+              ? "bg-green-500/20 border-green-500/50 text-green-400"
+              : "bg-white/5 border-white/10 text-white hover:bg-white/10"
+          }`}
+          aria-label={autoPlay ? "Pause auto-play" : "Start auto-play"}
+        >
+          {autoPlay ? <Pause size={20} /> : <Play size={20} />}
+        </motion.button>
+
+        <motion.button
+          onClick={nextProject}
+          whileHover={{ scale: 1.1, x: 5 }}
+          whileTap={{ scale: 0.9 }}
+          className="p-4 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:border-white/20 transition-all group"
+          aria-label="Next project"
+        >
+          <ArrowRight size={24} className="group-hover:translate-x-1 transition-transform" />
+        </motion.button>
       </div>
+
+      {/* Keyboard Hint */}
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+        className="text-xs text-gray-500 mt-4 text-center font-mono"
+      >
+        Use ← → arrow keys to navigate
+      </motion.p>
 
       {/* Mobile Hire Me */}
       <a href="https://wa.me/qr/VYUIPCRU4S2ZF1" target="_blank" rel="noopener noreferrer"

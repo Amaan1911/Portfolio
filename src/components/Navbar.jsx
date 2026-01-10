@@ -24,12 +24,19 @@ export default function Navbar() {
   ];
 
   return (
-    <nav
+    <motion.nav
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
       className={`fixed top-0 left-0 right-0 z-50 flex justify-center pt-6 px-4 transition-all duration-300 ${scrolled ? "pt-4" : "pt-6"
         }`}
     >
-      <div
-        className={`relative flex items-center justify-between px-6 py-3 rounded-full border border-white/10 shadow-lg backdrop-blur-md transition-all duration-500 ${scrolled || isOpen ? "bg-black/60 w-full max-w-4xl" : "bg-white/5 w-full max-w-2xl"
+      <motion.div
+        animate={{
+          scale: scrolled ? 0.98 : 1,
+          boxShadow: scrolled ? "0 10px 40px rgba(0,0,0,0.3)" : "0 5px 20px rgba(0,0,0,0.2)"
+        }}
+        className={`relative flex items-center justify-between px-6 py-3 rounded-full border border-white/10 shadow-lg backdrop-blur-md transition-all duration-500 ${scrolled || isOpen ? "bg-black/70 w-full max-w-4xl border-white/20" : "bg-white/5 w-full max-w-2xl"
           }`}
       >
         {/* Logo */}
@@ -100,7 +107,7 @@ export default function Navbar() {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
-    </nav>
+      </motion.div>
+    </motion.nav>
   );
 }

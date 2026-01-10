@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 
-// Initialize global variable for cleanup
 if (typeof window !== "undefined" && !window.__liquidApp) {
   window.__liquidApp = null;
 }
@@ -14,7 +13,6 @@ export function LiquidEffectAnimation() {
 
     const canvas = canvasRef.current;
     const canvasId = canvas.id || "liquid-canvas";
-
     if (!canvas.id) canvas.id = canvasId;
 
     const script = document.createElement("script");
@@ -29,19 +27,23 @@ export function LiquidEffectAnimation() {
           const app = LiquidBackground(canvas);
           window.__liquidApp = app;
 
-          // Original background image restored
-          app.loadImage('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1920&q=80&fit=crop');
+          // Dark minimalist background
+          app.loadImage('https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920&q=80&fit=crop');
 
-          if (app.liquidPlane) {
-            if (app.liquidPlane.material) {
-              app.liquidPlane.material.metalness = 0.2;   // reduced shine
-              app.liquidPlane.material.roughness = 0.75;  // softer reflections
-            }
-
-            if (app.liquidPlane.uniforms?.displacementScale) {
-              app.liquidPlane.uniforms.displacementScale.value = 1.8; // gentler motion
-            }
+          if (app.liquidPlane?.material) {
+            app.liquidPlane.material.metalness = 0.05;
+            app.liquidPlane.material.roughness = 0.9;
+            app.liquidPlane.material.color?.set?.("#0a0a0a");
           }
+
+          if (app.liquidPlane?.uniforms?.displacementScale) {
+            app.liquidPlane.uniforms.displacementScale.value = 1.2;
+          }
+
+          if (app.liquidPlane?.uniforms?.timeScale) {
+            app.liquidPlane.uniforms.timeScale.value = 0.15; // slower motion
+          }
+
         } catch (error) {
           console.error('Liquid effect init error:', error);
         }
@@ -71,16 +73,8 @@ export function LiquidEffectAnimation() {
   }, []);
 
   return (
-    <div
-      className="fixed inset-0 w-full h-full pointer-events-none overflow-hidden"
-      style={{ zIndex: 0 }}
-    >
-      <canvas
-        ref={canvasRef}
-        id="liquid-canvas"
-        className="fixed inset-0 w-full h-full"
-        style={{ display: "block" }}
-      />
+    <div className="fixed inset-0 w-full h-full pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
+      <canvas ref={canvasRef} id="liquid-canvas" className="fixed inset-0 w-full h-full" />
     </div>
   );
 }

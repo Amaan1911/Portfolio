@@ -1,5 +1,7 @@
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { ChevronDown } from "lucide-react";
 import {
   SiReact,
   SiNodedotjs,
@@ -14,6 +16,65 @@ import {
 
 function Home() {
   const navigate = useNavigate();
+  const [typingText, setTypingText] = useState("");
+  const [showCursor, setShowCursor] = useState(true);
+  const buttonRef = useRef(null);
+
+  const texts = ["modern", "accessible", "scalable"];
+  const [currentTextIndex, setCurrentTextIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Magnetic button effect
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const mouseXSpring = useSpring(x, { stiffness: 500, damping: 100 });
+  const mouseYSpring = useSpring(y, { stiffness: 500, damping: 100 });
+
+  // Typing effect
+  useEffect(() => {
+    const currentText = texts[currentTextIndex];
+    let timeout;
+
+    if (!isDeleting && typingText === currentText) {
+      timeout = setTimeout(() => setIsDeleting(true), 2000);
+    } else if (isDeleting && typingText === "") {
+      setIsDeleting(false);
+      setCurrentTextIndex((prev) => (prev + 1) % texts.length);
+    } else {
+      timeout = setTimeout(() => {
+        setTypingText(isDeleting
+          ? currentText.substring(0, typingText.length - 1)
+          : currentText.substring(0, typingText.length + 1)
+        );
+      }, isDeleting ? 50 : 100);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [typingText, isDeleting, currentTextIndex]);
+
+  // Cursor blink effect
+  useEffect(() => {
+    const interval = setInterval(() => setShowCursor((prev) => !prev), 530);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Magnetic button handler
+  const handleMouseMove = (e) => {
+    if (!buttonRef.current) return;
+    const rect = buttonRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const distanceX = e.clientX - centerX;
+    const distanceY = e.clientY - centerY;
+    x.set(distanceX * 0.2);
+    y.set(distanceY * 0.2);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -36,17 +97,39 @@ function Home() {
   };
 
   const techStack = [
-    { icon: SiReact, color: "#61DAFB" },
-    { icon: SiNodedotjs, color: "#339933" },
-    { icon: SiMongodb, color: "#47A248" },
-    { icon: SiExpress, color: "#ffffff" },
-    { icon: SiJavascript, color: "#F7DF1E" },
-    { icon: SiTypescript, color: "#3178C6" },
-    { icon: SiTailwindcss, color: "#06B6D4" },
+    { icon: SiReact, color: "#61DAFB", name: "React" },
+    { icon: SiNodedotjs, color: "#339933", name: "Node.js" },
+    { icon: SiMongodb, color: "#47A248", name: "MongoDB" },
+    { icon: SiExpress, color: "#ffffff", name: "Express" },
+    { icon: SiJavascript, color: "#F7DF1E", name: "JavaScript" },
+    { icon: SiTypescript, color: "#3178C6", name: "TypeScript" },
+    { icon: SiTailwindcss, color: "#06B6D4", name: "Tailwind CSS" },
   ];
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7.5deg", "-7.5deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7.5deg", "7.5deg"]);
 
   return (
     <section className="relative flex flex-col items-center justify-center min-h-[110vh] px-4 overflow-hidden pt-32 sm:pt-40 pb-20">
+      {/* Scroll Indicator */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 2, duration: 0.5 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20"
+      >
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="flex flex-col items-center gap-2 cursor-pointer group"
+          onClick={() => window.scrollTo({ top: window.innerHeight, behavior: "smooth" })}
+        >
+          <span className="text-xs font-mono text-gray-400 uppercase tracking-wider group-hover:text-white transition-colors">
+            Scroll
+          </span>
+          <ChevronDown className="text-gray-400 group-hover:text-white transition-colors" size={20} />
+        </motion.div>
+      </motion.div>
 
       <motion.div
         variants={containerVariants}
@@ -57,7 +140,7 @@ function Home() {
         {/* Status Badge */}
         <motion.div
           variants={itemVariants}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-12"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-12 hover:border-white/20 transition-colors"
         >
           <span className="relative flex h-2.5 w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -78,43 +161,95 @@ function Home() {
 
         <motion.p
           variants={itemVariants}
-          className="text-xl sm:text-2xl text-black max-w-2xl mx-auto leading-relaxed mb-12"
+          className="text-xl sm:text-2xl text-white max-w-2xl mx-auto leading-relaxed mb-4 min-h-[3rem]"
         >
-          MERN Stack developer crafting <span className="text-white font-medium">modern</span>, <span className="text-white font-medium">accessible</span>, and <span className="text-white font-medium">scalable</span> web experiences.
+          MERN Stack developer crafting{" "}
+          <span className="inline-block text-left">
+  <span className="font-medium bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+    {typingText}
+  </span>
+  <span
+    className={`inline-block w-1 h-6 bg-cyan-400 ml-1 ${
+      showCursor ? "opacity-100" : "opacity-0"
+    } transition-opacity`}
+  >
+    |
+  </span>
+</span>
+
+          web experiences.
+        </motion.p>
+        <motion.p
+          variants={itemVariants}
+          className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto mb-12"
+        >
+          Building the future, one line of code at a time.
         </motion.p>
 
-        {/* Buttons */}
+        {/* Buttons with Magnetic Effect */}
         <motion.div
           variants={itemVariants}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20"
         >
-          <button
+          <motion.button
+            ref={buttonRef}
             onClick={() => navigate("/projects")}
-            className="group relative px-8 py-4 rounded-full bg-white text-black font-bold text-lg overflow-hidden transition-transform hover:scale-105"
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+            className="group relative px-8 py-4 rounded-full bg-white text-black font-bold text-lg overflow-hidden transition-all hover:shadow-[0_0_30px_rgba(59,130,246,0.5)]"
           >
-            <span className="relative z-10">View My Work</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          </button>
+            <span className="relative z-10 block">View My Work</span>
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              initial={false}
+            />
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 opacity-0 group-active:opacity-100"
+              initial={false}
+            />
+          </motion.button>
 
-          <button
+          <motion.button
             onClick={() => navigate("/contact")}
-            className="px-8 py-4 rounded-full border border-white/20 hover:bg-white/5 text-white font-medium text-lg transition-all hover:scale-105"
+            whileHover={{ scale: 1.05, borderColor: "rgba(255,255,255,0.4)" }}
+            whileTap={{ scale: 0.95 }}
+            className="relative px-8 py-4 rounded-full border-2 border-white/20 hover:bg-white/10 text-white font-medium text-lg transition-all backdrop-blur-sm group overflow-hidden"
           >
-            Contact Me
-          </button>
+            <span className="relative z-10">Contact Me</span>
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity"
+              initial={false}
+            />
+          </motion.button>
         </motion.div>
 
-        {/* Tech Stack - Magnetic Effect Mockup */}
+        {/* Tech Stack with Tooltips and Magnetic Effect */}
         <motion.div variants={itemVariants} className="flex flex-col items-center gap-6">
           <span className="text-sm font-mono text-gray-500 uppercase tracking-[0.2em]">Technology Stack</span>
           <div className="flex flex-wrap justify-center gap-6">
             {techStack.map((Tech, i) => (
               <motion.div
                 key={i}
-                whileHover={{ y: -10, scale: 1.1 }}
-                className="p-4 rounded-2xl bg-white/5 border border-white/5  lg-[20px] backdrop-blur-sm cursor-pointer hover:bg-white/10 transition-colors"
+                className="group relative"
+                whileHover={{ y: -8 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
               >
-                <Tech.icon size={32} style={{ color: Tech.color }} />
+                <motion.div
+                  whileHover={{ scale: 1.15, rotate: 5 }}
+                  className="p-4 rounded-2xl bg-white/5 border border-white/5 backdrop-blur-sm cursor-pointer hover:bg-white/10 hover:border-white/20 transition-all duration-300 relative z-10"
+                >
+                  <Tech.icon size={32} style={{ color: Tech.color }} />
+                </motion.div>
+                {/* Tooltip */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.8 }}
+                  whileHover={{ opacity: 1, y: 0, scale: 1 }}
+                  className="absolute -bottom-10 left-1/2 -translate-x-1/2 px-3 py-1 bg-black/90 border border-white/20 rounded-lg text-xs font-medium text-white whitespace-nowrap pointer-events-none z-20 backdrop-blur-md"
+                >
+                  {Tech.name}
+                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black border-l border-t border-white/20 rotate-45"></div>
+                </motion.div>
               </motion.div>
             ))}
           </div>
