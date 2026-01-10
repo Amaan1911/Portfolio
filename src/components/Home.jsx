@@ -78,7 +78,7 @@ function Home() {
 
         <motion.p
           variants={itemVariants}
-          className="text-xl sm:text-2xl text-gray-400 max-w-2xl mx-auto leading-relaxed mb-12"
+          className="text-xl sm:text-2xl text-black max-w-2xl mx-auto leading-relaxed mb-12"
         >
           MERN Stack developer crafting <span className="text-white font-medium">modern</span>, <span className="text-white font-medium">accessible</span>, and <span className="text-white font-medium">scalable</span> web experiences.
         </motion.p>
