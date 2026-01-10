@@ -68,7 +68,7 @@ function Projects() {
       opacity: 0,
       scale: 0.8,
     }),
-    center: {
+    center: { 
       zIndex: 1,
       x: 0,
       opacity: 1,
