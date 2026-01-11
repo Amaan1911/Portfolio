@@ -1,4 +1,3 @@
-
 import { Github, Linkedin, Mail } from "lucide-react";
 import { BsWhatsapp } from "react-icons/bs";
 
@@ -6,10 +5,12 @@ function Footer() {
     return (
         <footer className="relative z-10 bg-neutral-950 pt-20 pb-10 border-t border-white/5 overflow-hidden">
 
-            {/* Ambient background glow for footer */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-full bg-blue-500/5 blur-[100px] pointer-events-none"></div>
+            {/* Ambient calming background glow */}
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[80%] h-[60%] bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 blur-[120px] animate-pulse"></div>
+            </div>
 
-            <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-start mb-16">
+            <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-start mb-16 relative z-10">
 
                 {/* Brand Section */}
                 <div className="space-y-6">
@@ -30,7 +31,7 @@ function Footer() {
                                 href={href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="p-3 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 hover:scale-110 transition-all"
+                                className="p-3 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 hover:scale-110 transition-all duration-300"
                                 aria-label={label}
                             >
                                 {icon}
@@ -45,12 +46,22 @@ function Footer() {
                         <h4 className="font-bold text-white mb-6">Connect</h4>
                         <ul className="space-y-4">
                             <li>
-                                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=amaansheikhbrothers@gmail.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2">
+                                <a
+                                    href="https://mail.google.com/mail/?view=cm&fs=1&to=amaansheikhbrothers@gmail.com"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2"
+                                >
                                     <Mail size={16} /> Email Me
                                 </a>
                             </li>
                             <li>
-                                <a href="https://wa.me/qr/VYUIPCRU4S2ZF1" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-green-400 transition-colors flex items-center gap-2">
+                                <a
+                                    href="https://wa.me/qr/VYUIPCRU4S2ZF1"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-gray-400 hover:text-green-400 transition-colors flex items-center gap-2"
+                                >
                                     <BsWhatsapp size={16} /> WhatsApp
                                 </a>
                             </li>
@@ -70,7 +81,7 @@ function Footer() {
             </div>
 
             {/* Copyright */}
-            <div className="max-w-7xl mx-auto px-6 border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
+            <div className="max-w-7xl mx-auto px-6 border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500 relative z-10">
                 <p>© {new Date().getFullYear()} Amaan Sheikh. All rights reserved.</p>
                 <p>Designed & Built with ❤️</p>
             </div>

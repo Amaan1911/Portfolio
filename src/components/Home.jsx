@@ -12,6 +12,11 @@ import {
   SiJavascript,
   SiTypescript,
   SiTailwindcss,
+  SiFirebase,
+  SiAmazonwebservices,
+  SiCplusplus
+
+
 } from "react-icons/si";
 
 function Home() {
@@ -104,6 +109,9 @@ function Home() {
     { icon: SiJavascript, color: "#F7DF1E", name: "JavaScript" },
     { icon: SiTypescript, color: "#3178C6", name: "TypeScript" },
     { icon: SiTailwindcss, color: "#06B6D4", name: "Tailwind CSS" },
+    { icon: SiFirebase, color: "#f73c1bff", name: "Firebase" },
+    { icon: SiAmazonwebservices, color: "#d2e638ff", name: "AWS" },
+    { icon: SiCplusplus, color: "#6c73eeff", name: "C++" },
   ];
 
   const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7.5deg", "-7.5deg"]);

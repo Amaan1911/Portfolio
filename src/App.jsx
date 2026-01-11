@@ -6,6 +6,7 @@ import Projects from "./components/Projects";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import { LiquidEffectAnimation } from "./components/LiquidEffectAnimation";
+import ModernFogBackground from "./components/ModernFogBackground";
 import { ScrollProgress } from "./components/ScrollProgress";
 import { CustomCursor } from "./components/CustomCursor";
 import { Snow } from "./components/Snow";
@@ -71,6 +72,7 @@ export default function App() {
         <CustomCursor />
         <ScrollProgress />
         <LiquidEffectAnimation />
+        {/* <ModernFogBackground /> */}
 
         {/* Overlay */}
         <div className="fixed inset-0 z-[1] pointer-events-none">
