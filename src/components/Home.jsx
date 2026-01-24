@@ -139,6 +139,35 @@ function Home() {
         </motion.div>
       </motion.div>
 
+      {/* Floating Icons Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {techStack.map((Tech, i) => (
+          <motion.div
+            key={i}
+            initial={{
+              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000),
+              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
+              opacity: 0
+            }}
+            animate={{
+              y: [Math.random() * -100, Math.random() * 100],
+              x: [Math.random() * -50, Math.random() * 50],
+              opacity: [0.1, 0.3, 0.1],
+              rotate: [0, 360]
+            }}
+            transition={{
+              duration: 10 + Math.random() * 20,
+              repeat: Infinity,
+              repeatType: "reverse",
+              ease: "linear"
+            }}
+            className="absolute z-0"
+          >
+            <Tech.icon size={40 + Math.random() * 40} style={{ color: Tech.color, opacity: 0.15, filter: "blur(2px)" }} />
+          </motion.div>
+        ))}
+      </div>
+
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -173,17 +202,16 @@ function Home() {
         >
           MERN Stack developer crafting{" "}
           <span className="inline-block text-left">
-  <span className="font-medium bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-    {typingText}
-  </span>
-  <span
-    className={`inline-block w-1 h-6 bg-cyan-400 ml-1 ${
-      showCursor ? "opacity-100" : "opacity-0"
-    } transition-opacity`}
-  >
-    |
-  </span>
-</span>
+            <span className="font-medium bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+              {typingText}
+            </span>
+            <span
+              className={`inline-block w-1 h-6 bg-cyan-400 ml-1 ${showCursor ? "opacity-100" : "opacity-0"
+                } transition-opacity`}
+            >
+              |
+            </span>
+          </span>
 
           web experiences.
         </motion.p>

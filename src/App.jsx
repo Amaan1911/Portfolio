@@ -5,8 +5,8 @@ import About from "./components/About";
 import Projects from "./components/Projects";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
-import { LiquidEffectAnimation } from "./components/LiquidEffectAnimation";
-import ModernFogBackground from "./components/ModernFogBackground";
+import WhatIamDoingNow from "./components/WhatIamDoingNow";
+import LightningBackground from "./components/LightningBackground";
 import { ScrollProgress } from "./components/ScrollProgress";
 import { CustomCursor } from "./components/CustomCursor";
 import { Snow } from "./components/Snow";
@@ -71,8 +71,7 @@ export default function App() {
       <div className="relative min-h-screen text-white overflow-hidden bg-black selection:bg-cyan-500 selection:text-black">
         <CustomCursor />
         <ScrollProgress />
-        <LiquidEffectAnimation />
-        {/* <ModernFogBackground /> */}
+        <LightningBackground />
 
         {/* Overlay */}
         <div className="fixed inset-0 z-[1] pointer-events-none">
@@ -90,6 +89,7 @@ export default function App() {
               <Route path="/about" element={<PageTransition><About /></PageTransition>} />
               <Route path="/projects" element={<PageTransition><Projects /></PageTransition>} />
               <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
+              <Route path="/now" element={<PageTransition><WhatIamDoingNow /></PageTransition>} />
             </Routes>
           </main>
 

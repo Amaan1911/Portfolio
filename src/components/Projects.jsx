@@ -1,9 +1,17 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, ExternalLink, Play, Pause } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { ArrowLeft, ArrowRight, ExternalLink, Play, Pause, Github } from "lucide-react";
 import { BsWhatsapp } from "react-icons/bs";
 
 const projectData = [
+
+  {
+    title: "Beeros - A modern Clothing Brand E-commerce Website",
+    description: "Beeros is a modern Clothing Brand E-commerce Website build with MERN Stack. Beeros has a modern UI and a smooth user experience. Razorpay payment gateway is used for payment processing.Complete reponsive UI and smooth user experience.",
+    image: "/Beeros_Img.png",
+    liveLink: "https://beeros.vercel.app",
+    tech: ["MERN", "Compass", "Razorpay", "passport.js"]
+  },
   {
     title: "AI Powered Notes App",
     description: "A smart note-taking app that leverages AI to summarize, organize, and search notes seamlessly. Boost productivity with intelligent suggestions and clean UI.",
@@ -53,6 +61,36 @@ function Projects() {
   const [direction, setDirection] = useState(0);
   const [autoPlay, setAutoPlay] = useState(false);
 
+  // 3D Tilt Effect Logic
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const mouseXSpring = useSpring(x, { stiffness: 50, damping: 20 });
+  const mouseYSpring = useSpring(y, { stiffness: 50, damping: 20 });
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7deg", "-7deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7deg", "7deg"]);
+
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
   const nextProject = () => {
     setDirection(1);
     setCurrentIndex((prev) => (prev + 1) % projectData.length);
@@ -77,12 +115,12 @@ function Projects() {
   // Auto-play functionality
   useEffect(() => {
     if (!autoPlay) return;
-    
+
     const interval = setInterval(() => {
       setDirection(1);
       setCurrentIndex((prev) => (prev + 1) % projectData.length);
     }, 5000);
-    
+
     return () => clearInterval(interval);
   }, [autoPlay]);
 
@@ -91,18 +129,21 @@ function Projects() {
       x: direction > 0 ? 1000 : -1000,
       opacity: 0,
       scale: 0.8,
+      rotateY: direction > 0 ? 45 : -45,
     }),
-    center: { 
+    center: {
       zIndex: 1,
       x: 0,
       opacity: 1,
       scale: 1,
+      rotateY: 0,
     },
     exit: (direction) => ({
       zIndex: 0,
       x: direction < 0 ? 1000 : -1000,
       opacity: 0,
       scale: 0.8,
+      rotateY: direction < 0 ? 45 : -45,
     }),
   };
 
@@ -112,9 +153,13 @@ function Projects() {
     <section className="relative min-h-screen py-20 px-6 overflow-hidden flex flex-col items-center justify-center">
 
       <div className="text-center mb-12 z-20">
-        <h2 className="text-5xl md:text-7xl mt-[10px] font-black bg-gradient-to-r from-white via-gray-200 to-gray-500 bg-clip-text text-transparent tracking-tighter mb-4">
+        <motion.h2
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          className="text-5xl md:text-7xl mt-[10px] font-black bg-gradient-to-r from-white via-gray-200 to-gray-500 bg-clip-text text-transparent tracking-tighter mb-4"
+        >
           SELECTED WORK
-        </h2>
+        </motion.h2>
         <p className="text-gray-400 font-mono text-sm tracking-widest">
           {String(currentIndex + 1).padStart(2, '0')} / {String(projectData.length).padStart(2, '0')}
         </p>
@@ -140,8 +185,8 @@ function Projects() {
         </div>
       </div>
 
-      {/* Desktop Animated Layout */}
-      <div className="relative w-full mt-[-60px] max-w-6xl mx-auto h-[500px] hidden md:flex items-center justify-center perspective-[1000px]">
+      {/* Desktop Animated Layout with 3D Tilt */}
+      <div className="relative w-full mt-[-40px] max-w-6xl mx-auto h-[550px] hidden md:flex items-center justify-center perspective-[2000px]">
         <AnimatePresence initial={false} custom={direction} mode="wait">
           <motion.div
             key={currentIndex}
@@ -150,15 +195,21 @@ function Projects() {
             initial="enter"
             animate="center"
             exit="exit"
-            transition={{ x: { type: "spring", stiffness: 300, damping: 30 }, opacity: { duration: 0.2 } }}
-            className="absolute inset-0 flex items-center justify-center gap-16"
+            transition={{ type: "spring", stiffness: 300, damping: 30, mass: 1 }}
+            className="absolute inset-0 flex items-center justify-center gap-12"
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            style={{
+              rotateX,
+              rotateY,
+              transformStyle: "preserve-3d"
+            }}
           >
-            <motion.div
-              whileHover={{ rotateY: 5, rotateX: -5 }}
-              className="w-1/2 bg-white/5 border border-white/10 backdrop-blur-xl p-10 rounded-3xl shadow-2xl transform -rotate-3 hover:rotate-0 transition-transform duration-500 relative group overflow-hidden"
-            >
+            {/* Text Content Side */}
+            <div className="w-[45%] bg-black/40 border border-white/10 backdrop-blur-xl p-10 rounded-3xl shadow-2xl transform transition-transform duration-500 relative overflow-hidden group">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative z-10">
+
+              <div className="relative z-10 transform translate-z-20">
                 <div className="flex flex-wrap gap-2 mb-6">
                   {currentProject.tech.map((t, i) => (
                     <motion.span
@@ -166,53 +217,47 @@ function Projects() {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: i * 0.1 }}
-                      className="px-3 py-1 bg-blue-500/20 text-blue-300 text-xs font-bold rounded-full uppercase tracking-wider border border-blue-500/20 hover:bg-blue-500/30 transition-colors"
+                      className="px-3 py-1 bg-white/5 text-cyan-300 text-xs font-bold rounded-full uppercase tracking-wider border border-white/10"
                     >
                       {t}
                     </motion.span>
                   ))}
                 </div>
-                <h3 className="text-4xl font-bold text-white mb-4">{currentProject.title}</h3>
-                <p className="text-gray-400 text-lg mb-8 leading-relaxed">{currentProject.description}</p>
+                <h3 className="text-4xl font-black text-white mb-4 leading-tight">{currentProject.title}</h3>
+                <p className="text-gray-300 text-lg mb-8 leading-relaxed">{currentProject.description}</p>
                 <div className="flex flex-wrap gap-4">
                   <motion.a
                     href={currentProject.liveLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(59, 130, 246, 0.4)" }}
-                    whileTap={{ scale: 0.95 }}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-white text-black font-bold rounded-full hover:bg-blue-400 transition-colors group/link"
-                  >
-                    Visit Site <ExternalLink size={18} className="group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
-                  </motion.a>
-                  <motion.a
-                    href="https://wa.me/qr/VYUIPCRU4S2ZF1"
-                    target="_blank"
-                    rel="noopener noreferrer"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="hidden md:inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-full transition-all shadow-lg"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-white text-black font-bold rounded-full hover:bg-gray-200 transition-colors group/link shadow-lg shadow-white/10"
                   >
-                    <BsWhatsapp size={16} /> Hire Me
+                    Visit Site <ExternalLink size={18} className="group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5 transition-transform" />
                   </motion.a>
+
                 </div>
               </div>
-            </motion.div>
+            </div>
 
+            {/* Image Side */}
             <motion.div
-              whileHover={{ scale: 1.05, rotate: 0 }}
-              className="w-1/2 h-full max-h-[400px] rounded-3xl overflow-hidden border-4 border-white/10 shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500 relative group cursor-pointer"
+              className="w-[50%] h-[400px] rounded-3xl overflow-hidden border border-white/10 shadow-2xl relative group cursor-pointer"
               onClick={() => window.open(currentProject.liveLink, "_blank")}
+              whileHover={{ scale: 1.02 }}
+              style={{ transformStyle: "preserve-3d", transform: "translateZ(20px)" }}
             >
+              <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10" />
               <div
                 style={{ backgroundImage: `url(${currentProject.image})` }}
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="absolute bottom-4 left-4 right-4 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                <span className="text-white text-sm font-medium flex items-center gap-2">
-                  Click to visit <ExternalLink size={16} />
-                </span>
+              {/* Reflection/Glare */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+              <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-20">
+                <p className="text-white font-medium flex items-center gap-2">View Project <ArrowRight size={16} /></p>
               </div>
             </motion.div>
           </motion.div>
@@ -235,11 +280,10 @@ function Projects() {
           onClick={() => setAutoPlay(!autoPlay)}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          className={`p-4 rounded-full border transition-all ${
-            autoPlay
-              ? "bg-green-500/20 border-green-500/50 text-green-400"
-              : "bg-white/5 border-white/10 text-white hover:bg-white/10"
-          }`}
+          className={`p-4 rounded-full border transition-all ${autoPlay
+            ? "bg-green-500/20 border-green-500/50 text-green-400"
+            : "bg-white/5 border-white/10 text-white hover:bg-white/10"
+            }`}
           aria-label={autoPlay ? "Pause auto-play" : "Start auto-play"}
         >
           {autoPlay ? <Pause size={20} /> : <Play size={20} />}

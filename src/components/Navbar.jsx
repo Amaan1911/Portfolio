@@ -21,6 +21,7 @@ export default function Navbar() {
     { name: "About", path: "/about" },
     { name: "Projects", path: "/projects" },
     { name: "Contact", path: "/contact" },
+    { name: "What I'm Doing now ?", path: "/now"}
   ];
 
   return (

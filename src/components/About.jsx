@@ -14,7 +14,7 @@ function About() {
 
   const stats = [
     { icon: Code, value: 15, suffix: "+", label: "Projects Completed", color: "from-blue-500 to-cyan-500" },
-    { icon: Rocket, value: 2, suffix: "+", label: "Years Experience", color: "from-purple-500 to-pink-500" },
+    { icon: Rocket, value: 1, suffix: "+", label: "Years Experience", color: "from-purple-500 to-pink-500" },
     { icon: Database, value: 10, suffix: "+", label: "Technologies", color: "from-green-500 to-emerald-500" },
     { icon: Coffee, value: 500, suffix: "+", label: "Cups of Coffee", color: "from-orange-500 to-red-500" },
   ];
@@ -71,7 +71,7 @@ function About() {
               className="relative"
             >
               <img
-                src="/Amaan.jpg"
+                src="/Amaan_Passport_Size.jpeg"
                 alt="Amaan Sheikh"
                 className="w-56 h-56 md:w-80 md:h-80 rounded-full object-cover shadow-2xl border-4 border-white/20 relative z-10"
               />
@@ -114,8 +114,8 @@ function About() {
               while continuously learning and adapting to new technologies.
             </p>
             <p className="text-gray-400 text-base leading-relaxed">
-              When I'm not coding, you'll find me exploring new frameworks, contributing to open-source projects, 
-              or sipping coffee while brainstorming the next big idea. I believe in writing clean, maintainable code 
+              When I'm not coding, you'll find me exploring new frameworks, contributing to open-source projects,
+              or sipping coffee while brainstorming the next big idea. I believe in writing clean, maintainable code
               and creating experiences that users love.
             </p>
             <motion.button
