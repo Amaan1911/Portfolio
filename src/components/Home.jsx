@@ -16,6 +16,46 @@ import {
 } from "react-icons/si";
 
 /* ======================
+   ANIMATED PARTICLES
+====================== */
+const FloatingParticles = () => {
+  const particles = Array.from({ length: 20 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: Math.random() * 4 + 2,
+    duration: Math.random() * 10 + 15
+  }));
+
+  return (
+    <div className="absolute inset-0 overflow-hidden z-[2] pointer-events-none">
+      {particles.map((particle) => (
+        <motion.div
+          key={particle.id}
+          className="absolute rounded-full bg-blue-400/30"
+          style={{
+            left: `${particle.x}%`,
+            top: `${particle.y}%`,
+            width: particle.size,
+            height: particle.size,
+          }}
+          animate={{
+            y: [0, -100, 0],
+            opacity: [0, 1, 0],
+            scale: [0, 1, 0],
+          }}
+          transition={{
+            duration: particle.duration,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
+/* ======================
    LIGHTNING FLASH
 ====================== */
 const LightningFlash = () => {
@@ -69,7 +109,6 @@ const LightningOverlay = () => {
       animate={{ opacity: [0, 1, 0] }}
       transition={{ duration: 0.35 }}
     >
-      {/* Main bolt */}
       <path
         d={`M${x} 0 L${x - 2} 25 L${x + 4} 40 L${x - 6} 60 L${x + 3} 80 L${x} 100`}
         stroke="url(#grad)"
@@ -77,8 +116,6 @@ const LightningOverlay = () => {
         fill="none"
         filter="url(#glow)"
       />
-
-      {/* Branch */}
       <path
         d={`M${x + 4} 40 L${x + 14} 55`}
         stroke="url(#grad)"
@@ -86,8 +123,6 @@ const LightningOverlay = () => {
         fill="none"
         filter="url(#glow)"
       />
-
-      {/* Branch */}
       <path
         d={`M${x - 3} 60 L${x - 14} 75`}
         stroke="url(#grad)"
@@ -101,7 +136,6 @@ const LightningOverlay = () => {
           <stop offset="0%" stopColor="#7dd3fc" />
           <stop offset="100%" stopColor="#a855f7" />
         </linearGradient>
-
         <filter id="glow">
           <feGaussianBlur stdDeviation="3" result="blur" />
           <feMerge>
@@ -114,7 +148,62 @@ const LightningOverlay = () => {
   );
 };
 
-function Home() {
+/* ======================
+   ANIMATED TECH ICONS
+====================== */
+const TechOrbit = () => {
+  const icons = [
+    { Icon: SiReact, color: "#61DAFB", angle: 0 },
+    { Icon: SiNodedotjs, color: "#339933", angle: 40 },
+    { Icon: SiMongodb, color: "#47A248", angle: 80 },
+    { Icon: SiExpress, color: "#FFFFFF", angle: 120 },
+    { Icon: SiJavascript, color: "#F7DF1E", angle: 160 },
+    { Icon: SiTypescript, color: "#3178C6", angle: 200 },
+    { Icon: SiTailwindcss, color: "#06B6D4", angle: 240 },
+    { Icon: SiFirebase, color: "#FFCA28", angle: 280 },
+    { Icon: SiAmazonwebservices, color: "#FF9900", angle: 320 },
+  ];
+
+  return (
+    <div className="absolute inset-0 z-[3] pointer-events-none">
+      {icons.map(({ Icon, color, angle }, index) => {
+        const radius = 45;
+        const x = 50 + radius * Math.cos((angle * Math.PI) / 180);
+        const y = 50 + radius * Math.sin((angle * Math.PI) / 180);
+
+        return (
+          <motion.div
+            key={index}
+            className="absolute"
+            style={{
+              left: `${x}%`,
+              top: `${y}%`,
+            }}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{
+              opacity: [0, 0.4, 0],
+              scale: [0, 1.2, 0],
+              rotate: [0, 360],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              delay: index * 0.8,
+              ease: "easeInOut",
+            }}
+          >
+            <Icon size={32} style={{ color }} />
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+};
+
+/* ======================
+   MAIN COMPONENT
+====================== */
+function AnimatedHome() {
   const navigate = useNavigate();
   const [typingText, setTypingText] = useState("");
   const [showCursor, setShowCursor] = useState(true);
@@ -174,8 +263,42 @@ function Home() {
   return (
     <section className="relative flex flex-col items-center justify-center min-h-[110vh] px-4 overflow-hidden pt-32 sm:pt-40 pb-20">
 
+      {/* Animated Background Gradient */}
+      <motion.div 
+        className="absolute inset-0 z-[0]"
+        animate={{
+          background: [
+            "radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.3), transparent 50%)",
+            "radial-gradient(circle at 80% 50%, rgba(147, 51, 234, 0.3), transparent 50%)",
+            "radial-gradient(circle at 50% 80%, rgba(59, 130, 246, 0.3), transparent 50%)",
+            "radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.3), transparent 50%)",
+          ]
+        }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+
       {/* Electric Aura */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.2),transparent_60%)] z-[1] animate-pulse" />
+      <motion.div 
+        className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.2),transparent_60%)] z-[1]"
+        animate={{
+          opacity: [0.5, 0.8, 0.5]
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+
+      {/* Floating Particles */}
+      <FloatingParticles />
+
+      {/* Tech Icons Orbit */}
+      <TechOrbit />
 
       {/* Thunder Effects */}
       <LightningFlash />
@@ -195,48 +318,151 @@ function Home() {
       {/* ================= MAIN CONTENT ================= */}
       <div className="text-center z-10 max-w-5xl mx-auto">
 
-        <h1 className="text-7xl sm:text-8xl md:text-9xl font-black tracking-tighter mb-8 
-        bg-gradient-to-b from-white via-white to-gray-500 
-        bg-clip-text text-transparent 
-        drop-shadow-[0_0_60px_rgba(59,130,246,0.45)]">
-          AMAAN <span className="sm:ml-4">SHEIKH</span>
-        </h1>
+        <motion.h1 
+          className="text-7xl sm:text-8xl md:text-9xl font-black tracking-tighter mb-8 
+          bg-gradient-to-b from-white via-white to-gray-500 
+          bg-clip-text text-transparent 
+          drop-shadow-[0_0_60px_rgba(59,130,246,0.45)]"
+          initial={{ opacity: 0, y: -50, scale: 0.8 }}
+          animate={{ 
+            opacity: 1, 
+            y: 0, 
+            scale: 1,
+          }}
+          transition={{
+            duration: 1,
+            ease: "easeOut"
+          }}
+        >
+          <motion.span
+            animate={{ 
+              textShadow: [
+                "0 0 20px rgba(59,130,246,0.3)",
+                "0 0 60px rgba(59,130,246,0.6)",
+                "0 0 20px rgba(59,130,246,0.3)",
+              ]
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          >
+            AMAAN
+          </motion.span>{" "}
+          <motion.span 
+            className="sm:ml-4"
+            animate={{ 
+              textShadow: [
+                "0 0 20px rgba(147,51,234,0.3)",
+                "0 0 60px rgba(147,51,234,0.6)",
+                "0 0 20px rgba(147,51,234,0.3)",
+              ]
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.3
+            }}
+          >
+            SHEIKH
+          </motion.span>
+        </motion.h1>
 
-        <p className="text-xl sm:text-2xl text-white max-w-2xl mx-auto mb-4">
+        <motion.p 
+          className="text-xl sm:text-2xl text-white max-w-2xl mx-auto mb-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+        >
           MERN Stack developer crafting{" "}
           <span className="font-medium bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
             {typingText}
           </span>
           <span className={`ml-1 ${showCursor ? "opacity-100" : "opacity-0"}`}>|</span>{" "}
           web experiences.
-        </p>
+        </motion.p>
 
-        <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto mb-12">
+        <motion.p 
+          className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.8 }}
+        >
           Building the future, one line of code at a time.
-        </p>
+        </motion.p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <motion.div 
+          className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7, duration: 0.8 }}
+        >
           <motion.button
             ref={buttonRef}
             onClick={() => navigate("/projects")}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-            className="px-8 py-4 rounded-full bg-white text-black font-bold text-lg hover:shadow-[0_0_50px_rgba(59,130,246,0.9)]"
+            className="px-8 py-4 rounded-full bg-white text-black font-bold text-lg hover:shadow-[0_0_50px_rgba(59,130,246,0.9)] transition-shadow duration-300"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            View My Work
+            <motion.span
+              animate={{
+                backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+              style={{
+                backgroundSize: "200% 100%",
+                backgroundImage: "linear-gradient(90deg, currentColor 0%, currentColor 50%, #3b82f6 50%, currentColor 100%)",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+              }}
+            >
+              View My Work
+            </motion.span>
           </motion.button>
 
           <motion.button
             onClick={() => navigate("/contact")}
-            className="px-8 py-4 rounded-full border-2 border-white/20 text-white hover:bg-white/10"
+            className="px-8 py-4 rounded-full border-2 border-white/20 text-white hover:bg-white/10 transition-all duration-300"
+            whileHover={{ 
+              scale: 1.05,
+              borderColor: "rgba(255,255,255,0.5)",
+              boxShadow: "0 0 20px rgba(59,130,246,0.4)"
+            }}
+            whileTap={{ scale: 0.95 }}
           >
             Contact Me
           </motion.button>
-        </div>
+        </motion.div>
+
+        {/* Scroll Indicator */}
+        <motion.div
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 z-10"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ 
+            opacity: [0, 1, 0],
+            y: [0, 10, 0]
+          }}
+          transition={{
+            delay: 1.5,
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        >
+          <ChevronDown className="text-white/50" size={32} />
+        </motion.div>
       </div>
     </section>
   );
 }
 
-export default Home;
+export default AnimatedHome;
