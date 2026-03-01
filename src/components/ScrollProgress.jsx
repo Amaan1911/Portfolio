@@ -1,32 +1,28 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useSpring } from "framer-motion";
 
 export function ScrollProgress() {
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const [rawProgress, setRawProgress] = useState(0);
+  const progress = useSpring(rawProgress, { stiffness: 300, damping: 40 });
 
   useEffect(() => {
-    const updateScrollProgress = () => {
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      const scrollableHeight = documentHeight - windowHeight;
-      const progress = (scrollTop / scrollableHeight) * 100;
-      setScrollProgress(progress);
+    const update = () => {
+      const { scrollY } = window;
+      const scrollable =
+        document.documentElement.scrollHeight - window.innerHeight;
+      setRawProgress(scrollable > 0 ? scrollY / scrollable : 0);
     };
-
-    window.addEventListener("scroll", updateScrollProgress);
-    updateScrollProgress(); // Initial calculation
-
-    return () => window.removeEventListener("scroll", updateScrollProgress);
+    window.addEventListener("scroll", update, { passive: true });
+    update();
+    return () => window.removeEventListener("scroll", update);
   }, []);
 
   return (
-    <motion.div
-      className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 z-[100] origin-left"
-      style={{ scaleX: scrollProgress / 100 }}
-      initial={{ scaleX: 0 }}
-    />
+    <div className="fixed top-0 left-0 right-0 h-[2px] z-[100] bg-transparent">
+      <motion.div
+        className="h-full bg-indigo-500 origin-left"
+        style={{ scaleX: progress }}
+      />
+    </div>
   );
 }
-
-

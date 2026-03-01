@@ -1,204 +1,228 @@
-import { motion, useInView } from "framer-motion";
-import { useRef, useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Code, Database, Rocket, Coffee } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import {
+  SiReact, SiNodedotjs, SiMongodb, SiExpress,
+  SiJavascript, SiTypescript, SiTailwindcss,
+  SiFirebase, SiAmazonwebservices, SiDocker,
+} from "react-icons/si";
 
-/* ======================
-   STAT CARD
-====================== */
-const StatCard = ({ icon: Icon, value, suffix, label, delay }) => (
+/* ── Animation variants ──────────────────────────────────── */
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] } },
+};
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08 } },
+};
+
+/* ── Stat card ───────────────────────────────────────────── */
+const StatCard = ({ value, suffix, label, delay }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5, delay }}
+    transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
     viewport={{ once: true }}
-    whileHover={{ y: -4 }}
-    className="p-6 rounded-xl bg-white/5 border border-white/10 text-center transition"
+    className="p-5 rounded-2xl glass border border-white/[0.06] text-center"
   >
-    <Icon className="text-blue-400 mb-3 mx-auto" size={26} />
-    <div className="text-3xl font-bold text-white">
-      {value}
-      {suffix}
+    <div className="text-3xl font-display font-bold text-white mb-1">
+      {value}{suffix}
     </div>
-    <div className="text-sm text-gray-400 mt-1">{label}</div>
+    <div className="text-xs text-white/40 tracking-wide">{label}</div>
   </motion.div>
 );
 
-/* ======================
-   SKILL BAR
-====================== */
-const SkillBar = ({ name, level, delay }) => (
-  <motion.div
-    initial={{ opacity: 0, x: -30 }}
-    whileInView={{ opacity: 1, x: 0 }}
-    transition={{ duration: 0.5, delay }}
-    viewport={{ once: true }}
-    className="space-y-2"
-  >
-    <div className="flex justify-between text-sm">
-      <span className="text-white font-medium">{name}</span>
-      <span className="text-gray-400">{level}%</span>
-    </div>
+/* ── Tech stack pills ────────────────────────────────────── */
+const techStack = [
+  { Icon: SiReact, label: "React", color: "#61DAFB" },
+  { Icon: SiNodedotjs, label: "Node.js", color: "#4CAF50" },
+  { Icon: SiMongodb, label: "MongoDB", color: "#47A248" },
+  { Icon: SiExpress, label: "Express", color: "#ffffff" },
+  { Icon: SiJavascript, label: "JavaScript", color: "#F7DF1E" },
+  { Icon: SiTypescript, label: "TypeScript", color: "#3178C6" },
+  { Icon: SiTailwindcss, label: "Tailwind", color: "#06B6D4" },
+  { Icon: SiFirebase, label: "Firebase", color: "#FFCA28" },
+  { Icon: SiAmazonwebservices, label: "AWS", color: "#FF9900" },
+  { Icon: SiDocker, label: "Docker", color: "#2496ED" },
+];
 
-    <div className="h-2 rounded-full bg-white/10 overflow-hidden">
-      <motion.div
-        initial={{ width: 0 }}
-        whileInView={{ width: `${level}%` }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
-        viewport={{ once: true }}
-        className="h-full bg-blue-500 rounded-full"
-      />
-    </div>
-  </motion.div>
+/* ── SectionLabel ────────────────────────────────────────── */
+const SectionLabel = ({ text }) => (
+  <span className="inline-flex items-center gap-2 text-xs font-medium text-indigo-400 tracking-[0.18em] uppercase mb-4">
+    <span className="w-5 h-px bg-indigo-400/60" />
+    {text}
+  </span>
 );
 
-/* ======================
-   MAIN COMPONENT
-====================== */
+/* ── About Page ──────────────────────────────────────────── */
 export default function About() {
   const navigate = useNavigate();
-  const statsRef = useRef(null);
-  const isInView = useInView(statsRef, { once: true });
+  const ref = useRef(null);
 
-  const [counts, setCounts] = useState({
-    projects: 0,
-    experience: 0,
-    technologies: 0,
-    coffee: 0,
-  });
-
-  useEffect(() => {
-    if (!isInView) return;
-
-    const targets = {
-      projects: 15,
-      experience: 1,
-      technologies: 10,
-      coffee: 500,
-    };
-
-    Object.keys(targets).forEach((key) => {
-      let current = 0;
-      const step = targets[key] / 40;
-
-      const timer = setInterval(() => {
-        current += step;
-        if (current >= targets[key]) {
-          current = targets[key];
-          clearInterval(timer);
-        }
-        setCounts((prev) => ({ ...prev, [key]: Math.floor(current) }));
-      }, 30);
-    });
-  }, [isInView]);
+  const stats = [
+    { value: "15", suffix: "+", label: "Projects Built" },
+    { value: "1", suffix: "+", label: "Year Experience" },
+    { value: "10", suffix: "+", label: "Technologies" },
+    { value: "500", suffix: "+", label: "Cups of Coffee" },
+  ];
 
   return (
-    <section className="relative py-24 px-6 md:px-16 bg-gradient-to-b from-[#0b0f1a] to-[#05070d] text-white overflow-hidden">
+    <section className="relative min-h-screen pt-28 pb-24 px-6 md:px-16 overflow-hidden">
 
-      {/* Subtle animated background */}
-      <motion.div
-        className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.15),transparent_60%)]"
-        animate={{ opacity: [0.3, 0.5, 0.3] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-      />
+      {/* Ambient background */}
+      <div className="pointer-events-none absolute inset-0 z-0">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full bg-indigo-600/[0.06] blur-[100px]" />
+      </div>
 
-      <div className="relative max-w-6xl mx-auto space-y-20">
+      <div ref={ref} className="relative z-10 max-w-5xl mx-auto">
 
-        {/* HEADER */}
+        {/* ── Header ── */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center max-w-3xl mx-auto"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          variants={stagger}
+          className="mb-20"
         >
-          <h1 className="text-5xl md:text-6xl font-bold mb-4">About Me</h1>
-          <p className="text-gray-400 text-lg">
-            Software Developer focused on building reliable, scalable, and
-            user-focused web applications.
-          </p>
+          <motion.div variants={fadeUp}>
+            <SectionLabel text="About Me" />
+          </motion.div>
+          <motion.h1
+            variants={fadeUp}
+            className="font-display text-5xl md:text-6xl font-bold text-white leading-tight mb-4"
+          >
+            Building products<br />
+            <span className="text-white/40">people love to use.</span>
+          </motion.h1>
+          <motion.p
+            variants={fadeUp}
+            className="text-white/50 text-lg max-w-xl leading-relaxed"
+          >
+            Software developer focused on reliable, scalable, and user-centered
+            web applications.
+          </motion.p>
         </motion.div>
 
-        {/* ABOUT CONTENT */}
-        <div className="grid md:grid-cols-2 gap-14 items-center">
-          <motion.img
-            src="/Amaan_Passport_Size.jpeg"
-            alt="Amaan Sheikh"
-            className="w-56 h-56 md:w-72 md:h-72 rounded-full object-cover mx-auto border border-white/20"
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            animate={{ y: [0, -6, 0] }}
-            transition={{
-              duration: 5,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            viewport={{ once: true }}
-          />
-
+        {/* ── Bio + Photo ── */}
+        <div className="grid md:grid-cols-2 gap-14 items-start mb-20">
+          {/* Photo */}
           <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
+            initial={{ opacity: 0, scale: 0.96 }}
+            whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="space-y-4 text-gray-300"
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="flex justify-center"
           >
-            <p>
-              I’m a{" "}
-              <span className="text-blue-400 font-medium">
-                Software Developer
-              </span>{" "}
-              experienced in building modern web applications using the MERN
-              stack. I enjoy solving real-world problems and turning ideas into
-              clean, maintainable code.
-            </p>
+            <div className="relative">
+              {/* Glow ring */}
+              <div className="absolute -inset-1 rounded-full bg-gradient-to-br from-indigo-500/30 via-violet-500/20 to-transparent blur-xl" />
+              <img
+                src="/Amaan_Passport_Size.jpeg"
+                alt="Amaan Sheikh"
+                loading="lazy"
+                className="relative w-52 h-52 md:w-64 md:h-64 rounded-full object-cover border border-white/[0.08] shadow-2xl"
+              />
+              {/* Subtle ring */}
+              <div className="absolute inset-0 rounded-full border border-indigo-400/20" />
+            </div>
+          </motion.div>
 
-            <p>
+          {/* Bio */}
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            variants={stagger}
+            className="space-y-5 text-white/60 leading-relaxed text-[0.97rem]"
+          >
+            <motion.p variants={fadeUp}>
+              I'm a{" "}
+              <span className="text-white font-medium">Software Developer</span>{" "}
+              experienced in building modern web applications using the{" "}
+              <span className="text-indigo-300">MERN stack</span>. I enjoy
+              solving real-world problems and turning ideas into clean,
+              maintainable code.
+            </motion.p>
+
+            <motion.p variants={fadeUp}>
               My focus is on scalable frontend and backend development, API
               integration, and creating interfaces that are fast, accessible,
               and easy to use.
-            </p>
+            </motion.p>
 
-            <p>
-              I’m continuously learning, improving my system design skills, and
+            <motion.p variants={fadeUp}>
+              I'm continuously learning, improving my system design skills, and
               aiming to grow as a production-ready engineer.
-            </p>
+            </motion.p>
 
-            <motion.button
-              onClick={() => navigate("/contact")}
-              whileHover={{ y: -2 }}
-              whileTap={{ scale: 0.97 }}
-              className="mt-4 inline-flex items-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg font-medium transition"
-            >
-              Let’s Connect <Rocket size={18} />
-            </motion.button>
+            <motion.div variants={fadeUp} className="pt-2">
+              <motion.button
+                onClick={() => navigate("/contact")}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-indigo-500/90 hover:bg-indigo-400 text-white text-sm font-medium transition-colors duration-200 shadow-lg shadow-indigo-500/25"
+              >
+                Let's Talk
+                <ArrowRight
+                  size={14}
+                  className="group-hover:translate-x-0.5 transition-transform duration-200"
+                />
+              </motion.button>
+            </motion.div>
           </motion.div>
         </div>
 
-        {/* STATS */}
-        <div ref={statsRef} className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          <StatCard icon={Code} value={counts.projects} suffix="+" label="Projects" delay={0.1} />
-          <StatCard icon={Rocket} value={counts.experience} suffix="+" label="Years Experience" delay={0.2} />
-          <StatCard icon={Database} value={counts.technologies} suffix="+" label="Technologies" delay={0.3} />
-          <StatCard icon={Coffee} value={counts.coffee} suffix="+" label="Cups of Coffee" delay={0.4} />
-        </div>
+        {/* ── Stats ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mb-20"
+        >
+          <SectionLabel text="By the numbers" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+            {stats.map((s, i) => (
+              <StatCard key={s.label} {...s} delay={i * 0.08} />
+            ))}
+          </div>
+        </motion.div>
 
-        {/* SKILLS */}
-        <div className="max-w-3xl mx-auto space-y-6">
-          <motion.h2
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
+        {/* ── Tech Stack ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          <SectionLabel text="Tech I work with" />
+          <motion.div
+            initial="hidden"
+            whileInView="show"
             viewport={{ once: true }}
-            className="text-3xl font-bold text-center mb-6"
+            variants={{ show: { transition: { staggerChildren: 0.05 } } }}
+            className="flex flex-wrap gap-2.5 mt-2"
           >
-            Skills
-          </motion.h2>
+            {techStack.map(({ Icon, label, color }) => (
+              <motion.div
+                key={label}
+                variants={{
+                  hidden: { opacity: 0, scale: 0.85 },
+                  show: { opacity: 1, scale: 1, transition: { duration: 0.35, ease: "easeOut" } },
+                }}
+                whileHover={{ y: -2, transition: { duration: 0.15 } }}
+                className="flex items-center gap-2 px-3.5 py-2 rounded-xl glass border border-white/[0.06] text-sm text-white/70 hover:text-white hover:border-white/10 transition-colors cursor-default"
+              >
+                <Icon size={15} style={{ color }} />
+                <span className="font-medium">{label}</span>
+              </motion.div>
+            ))}
+          </motion.div>
+        </motion.div>
 
-          <SkillBar name="Frontend Development (React, JavaScript)" level={90} delay={0.1} />
-          <SkillBar name="Backend Development (Node, Express)" level={85} delay={0.2} />
-          <SkillBar name="Database Design (MongoDB)" level={80} delay={0.3} />
-          <SkillBar name="UI & UX Fundamentals" level={75} delay={0.4} />
-        </div>
       </div>
     </section>
   );

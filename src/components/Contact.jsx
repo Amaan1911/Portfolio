@@ -1,25 +1,73 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Github, Linkedin, Send, CheckCircle, XCircle, User, MessageSquare, Phone, Clock } from "lucide-react";
+import { Mail, Github, Linkedin, Send, CheckCircle, XCircle, User, MessageSquare } from "lucide-react";
 import { BsWhatsapp } from "react-icons/bs";
 import { useState, useEffect } from "react";
 
-const FORMSPREE_ACTION = "https://formspree.io/f/xwvvewva";
+const FORMSPREE = "https://formspree.io/f/xwvvewva";
 
-function Contact() {
-  const [succeeded, setSucceeded] = useState(false);
+/* ── SectionLabel ────────────────────────────────────────── */
+const SectionLabel = ({ text }) => (
+  <span className="inline-flex items-center gap-2 text-xs font-medium text-indigo-400 tracking-[0.18em] uppercase mb-4">
+    <span className="w-5 h-px bg-indigo-400/60" />
+    {text}
+  </span>
+);
+
+/* ── Input wrapper ───────────────────────────────────────── */
+const Field = ({ label, icon: Icon, children }) => (
+  <div>
+    <label className="flex items-center gap-1.5 text-xs font-medium text-white/50 mb-2 uppercase tracking-wider">
+      <Icon size={12} />
+      {label}
+    </label>
+    {children}
+  </div>
+);
+
+const inputClass =
+  "w-full px-4 py-3 bg-white/[0.04] border border-white/[0.07] rounded-xl text-white text-sm placeholder-white/20 outline-none focus:border-indigo-500/50 focus:bg-white/[0.06] focus:ring-1 focus:ring-indigo-500/20 transition-all duration-200";
+
+/* ── Social links ────────────────────────────────────────── */
+const socials = [
+  {
+    href: "https://mail.google.com/mail/?view=cm&fs=1&to=amaansheikhbrothers@gmail.com",
+    Icon: Mail,
+    label: "Email",
+    sub: "amaansheikhbrothers@gmail.com",
+    hoverColor: "hover:border-red-500/30 hover:text-red-300",
+  },
+  {
+    href: "https://github.com/Amaan1911",
+    Icon: Github,
+    label: "GitHub",
+    sub: "@Amaan1911",
+    hoverColor: "hover:border-white/20 hover:text-white",
+  },
+  {
+    href: "https://www.linkedin.com/in/amaan-sheikh-3b25a2317/",
+    Icon: Linkedin,
+    label: "LinkedIn",
+    sub: "Amaan Sheikh",
+    hoverColor: "hover:border-blue-500/30 hover:text-blue-300",
+  },
+  {
+    href: "https://wa.me/qr/VYUIPCRU4S2ZF1",
+    Icon: BsWhatsapp,
+    label: "WhatsApp",
+    sub: "Quick Chat",
+    hoverColor: "hover:border-green-500/30 hover:text-green-300",
+  },
+];
+
+/* ── Contact ─────────────────────────────────────────────── */
+export default function Contact() {
+  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
+  const [succeeded, setSucceeded] = useState(false);
   const [error, setError] = useState(null);
 
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: ""
-  });
-
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    // Clear error when user starts typing
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
     if (error) setError(null);
   };
 
@@ -27,350 +75,208 @@ function Contact() {
     e.preventDefault();
     setSubmitting(true);
     setError(null);
-    setSucceeded(false);
-
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append("name", formData.name);
-      formDataToSend.append("email", formData.email);
-      formDataToSend.append("subject", formData.subject);
-      formDataToSend.append("message", formData.message);
-
-      const res = await fetch(FORMSPREE_ACTION, {
-        method: "POST",
-        headers: { Accept: "application/json" },
-        body: formDataToSend,
-      });
-
+      const fd = new FormData();
+      Object.entries(form).forEach(([k, v]) => fd.append(k, v));
+      const res = await fetch(FORMSPREE, { method: "POST", headers: { Accept: "application/json" }, body: fd });
       const data = await res.json();
-
       if (res.ok || data.ok || data.success) {
         setSucceeded(true);
-        setFormData({ name: "", email: "", subject: "", message: "" });
-        // Reset success message after 5 seconds
+        setForm({ name: "", email: "", subject: "", message: "" });
         setTimeout(() => setSucceeded(false), 5000);
       } else {
         setError(data.error || "Something went wrong. Please try again.");
       }
-    } catch (err) {
-      setError("Network error. Please check your connection and try again.");
+    } catch {
+      setError("Network error. Please check your connection.");
     }
-
     setSubmitting(false);
   };
 
-  // Reset form focus on success
-  useEffect(() => {
-    if (succeeded) {
-      document.activeElement?.blur();
-    }
-  }, [succeeded]);
+  useEffect(() => { if (succeeded) document.activeElement?.blur(); }, [succeeded]);
 
-  const socialLinks = [
-    { 
-      href: "https://mail.google.com/mail/?view=cm&fs=1&to=amaansheikhbrothers@gmail.com", 
-      icon: <Mail size={24} />, 
-      label: "Email",
-      description: "amaansheikhbrothers@gmail.com",
-      color: "hover:text-red-400 hover:border-red-400/50 hover:bg-red-500/10"
-    },
-    { 
-      href: "https://github.com/Amaan1911", 
-      icon: <Github size={24} />, 
-      label: "GitHub",
-      description: "@Amaan1911",
-      color: "hover:text-gray-300 hover:border-gray-300/50 hover:bg-gray-500/10"
-    },
-    { 
-      href: "https://www.linkedin.com/in/amaan-sheikh-3b25a2317/", 
-      icon: <Linkedin size={24} />, 
-      label: "LinkedIn",
-      description: "Amaan Sheikh",
-      color: "hover:text-blue-400 hover:border-blue-400/50 hover:bg-blue-500/10"
-    },
-    { 
-      href: "https://wa.me/qr/VYUIPCRU4S2ZF1", 
-      icon: <BsWhatsapp size={24} />, 
-      label: "WhatsApp",
-      description: "Quick Chat",
-      color: "hover:text-green-400 hover:border-green-400/50 hover:bg-green-500/10"
-    }
-  ];
+  const fadeUp = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
+  };
 
   return (
-    <section className="py-20 mt-10 px-6 md:px-16 min-h-screen flex items-center justify-center relative z-10">
-      <div className="w-full max-w-7xl mx-auto">
+    <section className="relative min-h-screen pt-28 pb-20 px-6 md:px-16 overflow-hidden">
+
+      {/* Ambient bg */}
+      <div className="pointer-events-none absolute inset-0 z-0">
+        <div className="absolute bottom-0 left-1/3 w-[500px] h-[400px] rounded-full bg-indigo-600/[0.06] blur-[100px]" />
+      </div>
+
+      <div className="relative z-10 max-w-5xl mx-auto">
+
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
+          initial="hidden" animate="show" variants={{ show: { transition: { staggerChildren: 0.1 } } }}
+          className="mb-14"
         >
-          <h2 className="text-5xl md:text-6xl font-black mb-4 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-            Let's Connect
-          </h2>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            Have a project in mind? Let's bring your ideas to life and create something amazing together.
-          </p>
+          <motion.div variants={fadeUp}><SectionLabel text="Contact" /></motion.div>
+          <motion.h1 variants={fadeUp} className="font-display text-5xl md:text-6xl font-bold text-white mb-4 leading-tight">
+            Let's work<br /><span className="text-white/35">together.</span>
+          </motion.h1>
+          <motion.p variants={fadeUp} className="text-white/45 text-lg max-w-md leading-relaxed">
+            Have a project in mind? I'd love to hear about it. Drop me a message and I'll get back to you.
+          </motion.p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Contact Form - Takes 2 columns */}
+        <div className="grid lg:grid-cols-5 gap-8">
+
+          {/* ── Form (3/5) ── */}
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="lg:col-span-2"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:col-span-3"
           >
-            <div className="relative group">
-              {/* Animated gradient border */}
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-3xl opacity-20 group-hover:opacity-40 blur transition-opacity duration-300" />
-              
-              <div className="relative bg-black/80 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-white/10 shadow-2xl">
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30">
-                    <MessageSquare className="text-blue-400" size={24} />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl md:text-3xl font-bold text-white">Send a Message</h3>
-                    <p className="text-sm text-gray-400">Fill out the form below and I'll get back to you</p>
-                  </div>
+            <div className="glass-strong rounded-3xl p-8 md:p-10">
+              {/* Card header */}
+              <div className="flex items-center gap-3 mb-8">
+                <div className="p-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
+                  <MessageSquare size={18} className="text-indigo-400" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-white">Send a message</h3>
+                  <p className="text-xs text-white/35">I'll respond within 24 hours</p>
+                </div>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="grid md:grid-cols-2 gap-5">
+                  <Field label="Name" icon={User}>
+                    <input id="name" name="name" type="text" value={form.name}
+                      onChange={handleChange} required placeholder="John Doe"
+                      className={inputClass} />
+                  </Field>
+                  <Field label="Email" icon={Mail}>
+                    <input id="email" name="email" type="email" value={form.email}
+                      onChange={handleChange} required placeholder="john@example.com"
+                      className={inputClass} />
+                  </Field>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {/* Name and Email Row */}
-                  <div className="grid md:grid-cols-2 gap-6">
+                <Field label="Subject" icon={MessageSquare}>
+                  <input id="subject" name="subject" type="text" value={form.subject}
+                    onChange={handleChange} required
+                    placeholder="Project Inquiry / Collaboration"
+                    className={inputClass} />
+                </Field>
+
+                <Field label="Message" icon={MessageSquare}>
+                  <textarea id="message" name="message" value={form.message}
+                    onChange={handleChange} required rows={5}
+                    placeholder="Tell me about your project…"
+                    className={`${inputClass} resize-none`} />
+                </Field>
+
+                {/* Status messages */}
+                <AnimatePresence mode="wait">
+                  {succeeded && (
                     <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 }}
-                      className="relative group/input"
+                      key="ok"
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="flex items-center gap-2.5 p-3.5 rounded-xl bg-green-500/8 border border-green-500/20 text-green-400 text-sm"
                     >
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-                        <User size={16} />
-                        Name *
-                      </label>
-                      <input
-                        id="name"
-                        name="name"
-                        type="text"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 focus:bg-white/10 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
-                        placeholder="John Doe"
-                      />
+                      <CheckCircle size={16} className="flex-shrink-0" />
+                      Message sent! I'll get back to you within 24 hours.
                     </motion.div>
-
+                  )}
+                  {error && (
                     <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                      className="relative group/input"
+                      key="err"
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="flex items-center gap-2.5 p-3.5 rounded-xl bg-red-500/8 border border-red-500/20 text-red-400 text-sm"
                     >
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-                        <Mail size={16} />
-                        Email *
-                      </label>
-                      <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 focus:bg-white/10 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
-                        placeholder="john@example.com"
-                      />
+                      <XCircle size={16} className="flex-shrink-0" />
+                      {error}
                     </motion.div>
-                  </div>
+                  )}
+                </AnimatePresence>
 
-                  {/* Subject */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                  >
-                    <label htmlFor="subject" className="block text-sm font-medium text-gray-300 mb-2">
-                      Subject *
-                    </label>
-                    <input
-                      id="subject"
-                      name="subject"
-                      type="text"
-                      value={formData.subject}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 focus:bg-white/10 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
-                      placeholder="Project Inquiry / Collaboration / Question"
-                    />
-                  </motion.div>
-
-                  {/* Message */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                  >
-                    <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
-                      Message *
-                    </label>
-                    <textarea
-                      id="message"
-                      name="message"
-                      value={formData.message}
-                      onChange={handleChange}
-                      required
-                      rows={6}
-                      className="w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 focus:bg-white/10 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 resize-none"
-                      placeholder="Tell me about your project, ideas, or how I can help you..."
-                    />
-                  </motion.div>
-
-                  {/* Status Messages */}
-                  <AnimatePresence mode="wait">
-                    {succeeded && (
+                {/* Submit */}
+                <motion.button
+                  type="submit"
+                  disabled={submitting || succeeded}
+                  whileHover={!submitting && !succeeded ? { scale: 1.02 } : {}}
+                  whileTap={!submitting && !succeeded ? { scale: 0.98 } : {}}
+                  className="w-full flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-indigo-500/90 hover:bg-indigo-400 text-white text-sm font-semibold transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/20"
+                >
+                  {submitting ? (
+                    <>
                       <motion.div
-                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                        className="p-4 rounded-xl bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/50 text-green-400 flex items-center gap-3 backdrop-blur-sm"
-                      >
-                        <CheckCircle size={20} className="flex-shrink-0" />
-                        <span className="text-sm font-medium">
-                          Message sent successfully! I'll get back to you within 24 hours.
-                        </span>
-                      </motion.div>
-                    )}
-
-                    {error && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                        className="p-4 rounded-xl bg-gradient-to-r from-red-500/10 to-rose-500/10 border border-red-500/50 text-red-400 flex items-center gap-3 backdrop-blur-sm"
-                      >
-                        <XCircle size={20} className="flex-shrink-0" />
-                        <span className="text-sm font-medium">{error}</span>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  {/* Submit Button */}
-                  <motion.button
-                    type="submit"
-                    disabled={submitting || succeeded}
-                    whileHover={!submitting && !succeeded ? { scale: 1.02, boxShadow: "0 10px 30px rgba(59, 130, 246, 0.4)" } : {}}
-                    whileTap={!submitting && !succeeded ? { scale: 0.98 } : {}}
-                    className="w-full px-8 py-4 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 rounded-xl text-white font-semibold flex items-center justify-center gap-3 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 relative overflow-hidden group"
-                  >
-                    {submitting ? (
-                      <>
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                          className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-                        />
-                        <span>Sending Message...</span>
-                      </>
-                    ) : succeeded ? (
-                      <>
-                        <CheckCircle size={20} />
-                        <span>Message Sent!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Send size={20} className="group-hover:translate-x-1 transition-transform" />
-                        <span>Send Message</span>
-                      </>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
-                  </motion.button>
-                </form>
-              </div>
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                      />
+                      Sending…
+                    </>
+                  ) : succeeded ? (
+                    <><CheckCircle size={16} /> Sent!</>
+                  ) : (
+                    <><Send size={16} /> Send Message</>
+                  )}
+                </motion.button>
+              </form>
             </div>
           </motion.div>
 
-          {/* Sidebar - Contact Info */}
+          {/* ── Sidebar (2/5) ── */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            viewport={{ once: true }}
-            className="space-y-6"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:col-span-2 flex flex-col gap-4"
           >
-            {/* Quick Info Card */}
-            <div className="bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 backdrop-blur-xl rounded-2xl p-6 border border-white/10 shadow-xl">
-              <h4 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                <Clock size={20} className="text-blue-400" />
-                Response Time
-              </h4>
-              <p className="text-gray-300 text-sm leading-relaxed mb-4">
-                I typically respond within <span className="text-blue-400 font-semibold">24 hours</span>. For urgent matters, feel free to reach out via WhatsApp!
-              </p>
-              <div className="pt-4 border-t border-white/10">
-                <p className="text-xs text-gray-400">
-                  💡 Pro tip: Include project details and timeline for faster response
-                </p>
+            {/* Availability */}
+            <div className="glass-strong rounded-2xl p-6 border border-green-500/15">
+              <div className="flex items-center gap-2.5 mb-2">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-60" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
+                </span>
+                <span className="text-sm font-semibold text-green-400">Available for Work</span>
               </div>
+              <p className="text-xs text-white/35 leading-relaxed">
+                Currently accepting new projects and collaborations. Response time: within 24 hours.
+              </p>
             </div>
 
-            {/* Social Links Card */}
-            <div className="bg-black/60 backdrop-blur-xl rounded-2xl p-6 border border-white/10 shadow-xl">
-              <h4 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                <Phone size={20} className="text-purple-400" />
-                Connect With Me
-              </h4>
-              <div className="space-y-3">
-                {socialLinks.map(({ href, icon, label, description, color }, i) => (
+            {/* Social links */}
+            <div className="glass-strong rounded-2xl p-6">
+              <h4 className="text-sm font-semibold text-white/60 mb-4 uppercase tracking-wider text-xs">Connect</h4>
+              <div className="space-y-2">
+                {socials.map(({ href, Icon, label, sub, hoverColor }) => (
                   <motion.a
-                    key={i}
+                    key={label}
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    whileHover={{ x: 5, scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 ${color} transition-all duration-300 group cursor-pointer`}
+                    whileHover={{ x: 3 }}
+                    className={`flex items-center gap-3.5 p-3 rounded-xl border border-white/[0.05] text-white/45 transition-all duration-200 ${hoverColor}`}
                   >
-                    <div className="p-2.5 rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors">
-                      {icon}
+                    <div className="p-1.5 rounded-lg bg-white/[0.04]">
+                      <Icon size={15} />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-white text-sm">{label}</div>
-                      <div className="text-xs text-gray-400 truncate">{description}</div>
+                    <div>
+                      <div className="text-sm font-medium text-white/80">{label}</div>
+                      <div className="text-[11px] text-white/30 truncate max-w-[150px]">{sub}</div>
                     </div>
                   </motion.a>
                 ))}
               </div>
             </div>
-
-            {/* Availability Badge */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
-              viewport={{ once: true }}
-              className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-xl rounded-2xl p-6 border border-green-500/30 shadow-xl"
-            >
-              <div className="flex items-center gap-3 mb-2">
-                <span className="relative flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                </span>
-                <span className="font-bold text-green-400 text-sm uppercase tracking-wider">Available for Work</span>
-              </div>
-              <p className="text-gray-300 text-xs mt-2">
-                Currently accepting new projects and collaborations
-              </p>
-            </motion.div>
           </motion.div>
+
         </div>
       </div>
     </section>
   );
 }
-
-export default Contact;

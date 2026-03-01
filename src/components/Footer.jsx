@@ -1,92 +1,77 @@
+import { Link } from "react-router-dom";
 import { Github, Linkedin, Mail } from "lucide-react";
 import { BsWhatsapp } from "react-icons/bs";
 
-function Footer() {
+const navLinks = [
+    { label: "Home", to: "/" },
+    { label: "Work", to: "/projects" },
+    { label: "About", to: "/about" },
+    { label: "Contact", to: "/contact" },
+    { label: "Now", to: "/now" },
+];
+
+const socialLinks = [
+    { href: "https://github.com/Amaan1911", Icon: Github, label: "GitHub" },
+    { href: "https://www.linkedin.com/in/amaan-sheikh-3b25a2317/", Icon: Linkedin, label: "LinkedIn" },
+    { href: "https://mail.google.com/mail/?view=cm&fs=1&to=amaansheikhbrothers@gmail.com", Icon: Mail, label: "Email" },
+    { href: "https://wa.me/qr/VYUIPCRU4S2ZF1", Icon: BsWhatsapp, label: "WhatsApp" },
+];
+
+export default function Footer() {
     return (
-        <footer className="relative z-10 bg-neutral-950 pt-20 pb-10 border-t border-white/5 overflow-hidden">
+        <footer className="relative z-10 border-t border-white/[0.05] py-12 px-6 md:px-16">
+            <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-start justify-between gap-8">
 
-            {/* Ambient calming background glow */}
-            <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[80%] h-[60%] bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 blur-[120px] animate-pulse"></div>
-            </div>
-
-            <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-start mb-16 relative z-10">
-
-                {/* Brand Section */}
-                <div className="space-y-6">
-                    <h2 className="text-3xl font-black tracking-tighter text-white">
-                        AMAAN SHEIKH.
-                    </h2>
-                    <p className="text-gray-400 max-w-xs leading-relaxed">
-                        Crafting digital experiences with code and creativity. <br />
+                {/* Brand */}
+                <div className="space-y-4">
+                    <p className="font-display text-xl font-bold text-white">
+                        AS<span className="text-indigo-400">.</span>
+                    </p>
+                    <p className="text-white/35 text-sm max-w-xs leading-relaxed">
+                        Crafting digital experiences with code and creativity.
                         Based in India, working worldwide.
                     </p>
-                    <div className="flex gap-4">
-                        {[
-                            { href: "https://github.com/Amaan1911", icon: <Github size={20} />, label: "GitHub" },
-                            { href: "https://www.linkedin.com/in/amaan-sheikh-3b25a2317/", icon: <Linkedin size={20} />, label: "LinkedIn" },
-                        ].map(({ href, icon, label }, i) => (
+                    {/* Social icons */}
+                    <div className="flex items-center gap-2">
+                        {socialLinks.map(({ href, Icon, label }) => (
                             <a
-                                key={i}
+                                key={label}
                                 href={href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="p-3 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 hover:scale-110 transition-all duration-300"
                                 aria-label={label}
+                                className="p-2 rounded-full border border-white/[0.06] text-white/30 hover:text-white hover:border-white/15 transition-all duration-200"
                             >
-                                {icon}
+                                <Icon size={15} />
                             </a>
                         ))}
                     </div>
                 </div>
 
-                {/* Quick Links / Contact Grid */}
-                <div className="grid grid-cols-2 gap-8">
-                    <div>
-                        <h4 className="font-bold text-white mb-6">Connect</h4>
-                        <ul className="space-y-4">
-                            <li>
-                                <a
-                                    href="https://mail.google.com/mail/?view=cm&fs=1&to=amaansheikhbrothers@gmail.com"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2"
+                {/* Nav links */}
+                <div>
+                    <h5 className="text-xs font-medium text-white/25 uppercase tracking-widest mb-4">Pages</h5>
+                    <ul className="space-y-2.5">
+                        {navLinks.map(({ label, to }) => (
+                            <li key={label}>
+                                <Link
+                                    to={to}
+                                    className="text-sm text-white/40 hover:text-white/80 transition-colors duration-200"
                                 >
-                                    <Mail size={16} /> Email Me
-                                </a>
+                                    {label}
+                                </Link>
                             </li>
-                            <li>
-                                <a
-                                    href="https://wa.me/qr/VYUIPCRU4S2ZF1"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-gray-400 hover:text-green-400 transition-colors flex items-center gap-2"
-                                >
-                                    <BsWhatsapp size={16} /> WhatsApp
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <h4 className="font-bold text-white mb-6">Menu</h4>
-                        <ul className="space-y-4 text-gray-400 uppercase text-sm tracking-wider">
-                            <li><a href="/" className="hover:text-white transition-colors">Home</a></li>
-                            <li><a href="/projects" className="hover:text-white transition-colors">Work</a></li>
-                            <li><a href="/about" className="hover:text-white transition-colors">About</a></li>
-                        </ul>
-                    </div>
+                        ))}
+                    </ul>
                 </div>
 
             </div>
 
-            {/* Copyright */}
-            <div className="max-w-7xl mx-auto px-6 border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500 relative z-10">
+            {/* Bottom bar */}
+            <div className="max-w-5xl mx-auto mt-10 pt-6 border-t border-white/[0.04] flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-white/20">
                 <p>© {new Date().getFullYear()} Amaan Sheikh. All rights reserved.</p>
-                <p>Designed & Built with ❤️</p>
+                <p>Designed &amp; built with care.</p>
             </div>
         </footer>
     );
 }
-
-export default Footer;

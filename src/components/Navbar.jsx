@@ -3,112 +3,165 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+const links = [
+  { name: "Home", path: "/" },
+  { name: "About", path: "/about" },
+  { name: "Work", path: "/projects" },
+  { name: "Contact", path: "/contact" },
+  { name: "Now", path: "/now" },
+];
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const links = [
-    { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
-    { name: "Projects", path: "/projects" },
-    { name: "Contact", path: "/contact" },
-    { name: "What I'm Doing now ?", path: "/now"}
-  ];
+  // Close menu on route change
+  useEffect(() => { setIsOpen(false); }, [location.pathname]);
 
   return (
-    <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className={`fixed top-0 left-0 right-0 z-50 flex justify-center pt-6 px-4 transition-all duration-300 ${scrolled ? "pt-4" : "pt-6"
-        }`}
+    <motion.header
+      initial={{ y: -80, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-5 px-4"
     >
       <motion.div
         animate={{
-          scale: scrolled ? 0.98 : 1,
-          boxShadow: scrolled ? "0 10px 40px rgba(0,0,0,0.3)" : "0 5px 20px rgba(0,0,0,0.2)"
+          boxShadow: scrolled
+            ? "0 4px 32px rgba(0,0,0,0.45)"
+            : "0 0px 0px rgba(0,0,0,0)",
         }}
-        className={`relative flex items-center justify-between px-6 py-3 rounded-full border border-white/10 shadow-lg backdrop-blur-md transition-all duration-500 ${scrolled || isOpen ? "bg-black/70 w-full max-w-4xl border-white/20" : "bg-white/5 w-full max-w-2xl"
-          }`}
+        transition={{ duration: 0.4 }}
+        className={`
+          relative flex items-center justify-between
+          px-5 py-2.5 rounded-full
+          transition-all duration-500 w-full max-w-3xl
+          ${scrolled
+            ? "bg-[#080810]/80 backdrop-blur-2xl border border-white/[0.06]"
+            : "bg-white/[0.03] backdrop-blur-sm border border-white/[0.04]"
+          }
+        `}
       >
         {/* Logo */}
         <Link
           to="/"
-          className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+          className="text-base font-display font-bold tracking-tight text-white hover:text-indigo-300 transition-colors duration-200"
         >
-          AS.
+          AS<span className="text-indigo-400">.</span>
         </Link>
 
         {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-1">
+        <nav className="hidden md:flex items-center gap-1">
           {links.map((link) => {
-            const isActive = location.pathname === link.path;
+            const active = location.pathname === link.path;
             return (
               <Link
                 key={link.name}
                 to={link.path}
-                className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${isActive ? "text-white shadow-[0_0_20px_rgba(59,130,246,0.5)]" : "text-gray-400 hover:text-white"
-                  }`}
+                className={`
+                  relative px-3.5 py-1.5 rounded-full text-sm font-medium
+                  transition-colors duration-200
+                  ${active ? "text-white" : "text-white/50 hover:text-white/90"}
+                `}
               >
-                {isActive && (
-                  <motion.div
+                {active && (
+                  <motion.span
                     layoutId="nav-pill"
-                    className="absolute inset-0 bg-white/10 rounded-full"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    className="absolute inset-0 rounded-full bg-white/[0.08]"
+                    transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
                   />
                 )}
                 <span className="relative z-10">{link.name}</span>
+                {active && (
+                  <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-400" />
+                )}
               </Link>
             );
           })}
-        </div>
+        </nav>
+
+        {/* CTA — desktop */}
+        <a
+          href="https://wa.me/qr/VYUIPCRU4S2ZF1"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hidden md:inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/90 hover:bg-indigo-400 text-white text-sm font-medium transition-colors duration-200 shadow-lg shadow-indigo-500/20"
+        >
+          Hire Me
+        </a>
 
         {/* Mobile Toggle */}
         <button
-          className="md:hidden p-2 text-gray-300 hover:text-white transition-colors rounded-full hover:bg-white/10"
+          className="md:hidden p-2 text-white/60 hover:text-white transition-colors rounded-full hover:bg-white/[0.06]"
           onClick={() => setIsOpen(!isOpen)}
+          aria-label="Toggle menu"
         >
-          {isOpen ? <X size={20} /> : <Menu size={20} />}
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span
+              key={isOpen ? "close" : "open"}
+              initial={{ rotate: -90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: 90, opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              {isOpen ? <X size={18} /> : <Menu size={18} />}
+            </motion.span>
+          </AnimatePresence>
         </button>
 
-        {/* Mobile Menu Content */}
+        {/* Mobile Menu */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: -20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              transition={{ duration: 0.2 }}
-              className="absolute top-16 right-0 left-0 p-4 mx-auto w-full bg-black/90 border border-white/10 rounded-2xl backdrop-blur-xl md:hidden overflow-hidden"
+              initial={{ opacity: 0, y: -8, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8, scale: 0.97 }}
+              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute top-14 left-0 right-0 mx-auto w-full glass-strong rounded-2xl overflow-hidden p-3 md:hidden"
             >
-              <div className="flex flex-col gap-2">
-                {links.map((link) => (
+              {links.map((link, i) => (
+                <motion.div
+                  key={link.name}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.04, duration: 0.2 }}
+                >
                   <Link
-                    key={link.name}
                     to={link.path}
-                    onClick={() => setIsOpen(false)}
-                    className={`p-3 rounded-xl text-center transition-colors ${location.pathname === link.path
-                        ? "bg-blue-600/20 text-blue-400 font-bold"
-                        : "hover:bg-white/5 text-gray-300"
-                      }`}
+                    className={`
+                      block px-4 py-2.5 rounded-xl text-sm font-medium
+                      transition-colors duration-150
+                      ${location.pathname === link.path
+                        ? "bg-indigo-500/15 text-indigo-300"
+                        : "text-white/60 hover:text-white hover:bg-white/[0.05]"
+                      }
+                    `}
                   >
                     {link.name}
                   </Link>
-                ))}
+                </motion.div>
+              ))}
+              <div className="mt-2 pt-2 border-t border-white/[0.05]">
+                <a
+                  href="https://wa.me/qr/VYUIPCRU4S2ZF1"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block text-center px-4 py-2.5 rounded-xl bg-indigo-500/90 text-white text-sm font-medium"
+                >
+                  Hire Me
+                </a>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </motion.div>
-    </motion.nav>
+    </motion.header>
   );
 }
