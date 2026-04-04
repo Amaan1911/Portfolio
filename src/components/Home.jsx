@@ -1,9 +1,14 @@
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform, useScroll } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
+import {
+  SiReact, SiNodedotjs, SiMongodb, SiExpress,
+  SiJavascript, SiTypescript, SiTailwindcss,
+  SiFirebase, SiDocker, SiGit,
+} from "react-icons/si";
 
-/* ── Typing hook ─────────────────────────────────────────── */
+/* -- Typing hook -- */
 function useTypingEffect(words) {
   const [text, setText] = useState("");
   const [wordIdx, setWordIdx] = useState(0);
@@ -12,7 +17,6 @@ function useTypingEffect(words) {
   useEffect(() => {
     const word = words[wordIdx];
     let timeout;
-
     if (!deleting && text === word) {
       timeout = setTimeout(() => setDeleting(true), 2200);
     } else if (deleting && text === "") {
@@ -20,74 +24,39 @@ function useTypingEffect(words) {
       setWordIdx((i) => (i + 1) % words.length);
     } else {
       timeout = setTimeout(
-        () =>
-          setText(
-            deleting
-              ? word.slice(0, text.length - 1)
-              : word.slice(0, text.length + 1)
-          ),
-        deleting ? 45 : 95
+        () => setText(deleting ? word.slice(0, text.length - 1) : word.slice(0, text.length + 1)),
+        deleting ? 40 : 80
       );
     }
-
     return () => clearTimeout(timeout);
   }, [text, deleting, wordIdx, words]);
 
   return text;
 }
 
-/* ── Subtle dot-grid background ─────────────────────────── */
-const DotGrid = () => (
-  <div
-    className="absolute inset-0 pointer-events-none z-0"
-    style={{
-      backgroundImage:
-        "radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)",
-      backgroundSize: "36px 36px",
-    }}
-  />
+/* -- Char-by-char reveal -- */
+const CharReveal = ({ text, className, delay = 0 }) => (
+  <span className={className}>
+    {text.split("").map((char, i) => (
+      <motion.span
+        key={i}
+        initial={{ opacity: 0, y: 40, filter: "blur(8px)" }}
+        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+        transition={{
+          duration: 0.5,
+          delay: delay + i * 0.03,
+          ease: [0.22, 1, 0.36, 1],
+        }}
+        className="inline-block"
+        style={{ whiteSpace: char === " " ? "pre" : undefined }}
+      >
+        {char}
+      </motion.span>
+    ))}
+  </span>
 );
 
-/* ── Ambient glow orbs ───────────────────────────────────── */
-const AmbientOrbs = () => (
-  <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-    {/* Top-left */}
-    <motion.div
-      className="absolute w-[700px] h-[700px] rounded-full"
-      style={{
-        background:
-          "radial-gradient(circle, rgba(99,102,241,0.13) 0%, transparent 70%)",
-        top: "-20%", left: "-15%",
-      }}
-      animate={{ x: [0, 30, 0], y: [0, 20, 0] }}
-      transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-    />
-    {/* Bottom-right */}
-    <motion.div
-      className="absolute w-[600px] h-[600px] rounded-full"
-      style={{
-        background:
-          "radial-gradient(circle, rgba(129,140,248,0.09) 0%, transparent 70%)",
-        bottom: "-10%", right: "-10%",
-      }}
-      animate={{ x: [0, -25, 0], y: [0, -15, 0] }}
-      transition={{ duration: 14, repeat: Infinity, ease: "easeInOut", delay: 3 }}
-    />
-  </div>
-);
-
-/* ── Stagger animation variants ──────────────────────────── */
-const container = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.13, delayChildren: 0.1 } },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 28 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
-};
-
-/* ── Magnetic Button ─────────────────────────────────────── */
+/* -- Magnetic button -- */
 function MagneticButton({ children, onClick, className }) {
   const ref = useRef(null);
   const mx = useMotionValue(0);
@@ -98,14 +67,11 @@ function MagneticButton({ children, onClick, className }) {
   const handleMove = useCallback((e) => {
     if (!ref.current) return;
     const r = ref.current.getBoundingClientRect();
-    mx.set((e.clientX - (r.left + r.width / 2)) * 0.3);
-    my.set((e.clientY - (r.top + r.height / 2)) * 0.3);
+    mx.set((e.clientX - (r.left + r.width / 2)) * 0.25);
+    my.set((e.clientY - (r.top + r.height / 2)) * 0.25);
   }, [mx, my]);
 
-  const handleLeave = useCallback(() => {
-    mx.set(0);
-    my.set(0);
-  }, [mx, my]);
+  const handleLeave = useCallback(() => { mx.set(0); my.set(0); }, [mx, my]);
 
   return (
     <motion.button
@@ -122,141 +88,300 @@ function MagneticButton({ children, onClick, className }) {
   );
 }
 
-/* ── Hero Component ──────────────────────────────────────── */
-export default function AnimatedHome() {
+/* -- Tech marquee items -- */
+const techItems = [
+  { Icon: SiReact, label: "React", color: "#61DAFB" },
+  { Icon: SiNodedotjs, label: "Node.js", color: "#4CAF50" },
+  { Icon: SiMongodb, label: "MongoDB", color: "#47A248" },
+  { Icon: SiExpress, label: "Express", color: "#ffffff" },
+  { Icon: SiJavascript, label: "JavaScript", color: "#F7DF1E" },
+  { Icon: SiTypescript, label: "TypeScript", color: "#3178C6" },
+  { Icon: SiTailwindcss, label: "Tailwind", color: "#06B6D4" },
+  { Icon: SiFirebase, label: "Firebase", color: "#FFCA28" },
+  { Icon: SiDocker, label: "Docker", color: "#2496ED" },
+  { Icon: SiGit, label: "Git", color: "#F05032" },
+];
+
+const MarqueeStrip = () => (
+  <div className="w-full overflow-hidden py-8 border-y border-white/[0.04]">
+    <div className="marquee-track">
+      {[...techItems, ...techItems].map(({ Icon, label, color }, i) => (
+        <div
+          key={i}
+          className="flex items-center gap-3 px-8 text-white/30 hover:text-white/70 transition-colors duration-300 whitespace-nowrap"
+        >
+          <Icon size={20} style={{ color }} className="opacity-60" />
+          <span className="text-sm font-medium tracking-wide">{label}</span>
+          <span className="text-white/10 mx-4">/</span>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+/* -- Floating badge -- */
+const FloatingBadge = ({ children, className, delay = 0 }) => (
+  <motion.div
+    initial={{ opacity: 0, scale: 0.8 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ delay, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+    className={className}
+  >
+    <motion.div
+      animate={{ y: [0, -8, 0] }}
+      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay }}
+    >
+      {children}
+    </motion.div>
+  </motion.div>
+);
+
+/* -- Hero -- */
+export default function Home() {
   const navigate = useNavigate();
   const typingText = useTypingEffect(["modern", "accessible", "scalable", "performant"]);
   const [showCursor, setShowCursor] = useState(true);
+  const sectionRef = useRef(null);
 
-  // Blinking cursor
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const heroScale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95]);
+  const heroY = useTransform(scrollYProgress, [0, 0.5], [0, 60]);
+
   useEffect(() => {
     const id = setInterval(() => setShowCursor((v) => !v), 550);
     return () => clearInterval(id);
   }, []);
 
-  // Subtle mouse parallax on the whole section
-  const sectionRef = useRef(null);
-  const px = useMotionValue(0);
-  const py = useMotionValue(0);
-  const spx = useSpring(px, { stiffness: 80, damping: 30 });
-  const spy = useSpring(py, { stiffness: 80, damping: 30 });
-  const moveX = useTransform(spx, [-0.5, 0.5], [-8, 8]);
-  const moveY = useTransform(spy, [-0.5, 0.5], [-6, 6]);
-
-  const handleParallax = useCallback((e) => {
-    if (!sectionRef.current) return;
-    const r = sectionRef.current.getBoundingClientRect();
-    px.set((e.clientX - r.left) / r.width - 0.5);
-    py.set((e.clientY - r.top) / r.height - 0.5);
-  }, [px, py]);
-
   return (
-    <section
-      ref={sectionRef}
-      onMouseMove={handleParallax}
-      className="relative flex flex-col items-center justify-center min-h-screen px-6 overflow-hidden pt-24 pb-16"
-    >
-      <DotGrid />
-      <AmbientOrbs />
-
-      {/* Content with parallax */}
-      <motion.div
-        style={{ x: moveX, y: moveY }}
-        className="relative z-10 w-full max-w-4xl mx-auto text-center"
+    <div ref={sectionRef}>
+      {/* HERO SECTION */}
+      <motion.section
+        style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
+        className="relative flex flex-col items-center justify-center min-h-screen px-6 overflow-hidden"
       >
-        <motion.div variants={container} initial="hidden" animate="show">
+        {/* Grid pattern */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-[0.025]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
+            backgroundSize: "60px 60px",
+          }}
+        />
 
-          {/* Eyebrow badge */}
-          <motion.div variants={item} className="flex justify-center mb-6">
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 tracking-wide">
-              <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-              Available for Work
+        {/* Content */}
+        <div className="relative z-10 w-full max-w-5xl mx-auto text-center">
+
+          {/* Status badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className="flex justify-center mb-8"
+          >
+            <span className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full text-xs font-medium bg-white/[0.04] text-white/50 border border-white/[0.08] backdrop-blur-sm">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              </span>
+              Available for freelance & full-time
             </span>
           </motion.div>
 
-          {/* Main headline */}
-          <motion.h1
-            variants={item}
-            className="font-display text-[clamp(3.5rem,10vw,7.5rem)] font-bold leading-[0.92] tracking-tight mb-6"
-          >
-            <span className="block text-white">Amaan</span>
-            <span className="block bg-gradient-to-r from-indigo-400 via-violet-400 to-indigo-300 bg-clip-text text-transparent">
-              Sheikh
-            </span>
-          </motion.h1>
-
-          {/* Subtitle with typing effect */}
-          <motion.p
-            variants={item}
-            className="text-lg sm:text-xl text-white/55 max-w-xl mx-auto mb-3 leading-relaxed"
-          >
-            MERN Stack developer crafting{" "}
-            <span className="text-white/90 font-medium">
-              {typingText}
-              <span
-                className={`inline-block w-[2px] h-[1em] bg-indigo-400 ml-0.5 align-middle transition-opacity duration-75 ${showCursor ? "opacity-100" : "opacity-0"
-                  }`}
+          {/* Main heading */}
+          <div className="mb-6">
+            <h1 className="font-display font-bold leading-[0.9] tracking-tight">
+              <CharReveal
+                text="Amaan"
+                className="block text-[clamp(4rem,12vw,9rem)] text-white"
+                delay={0.4}
               />
-            </span>{" "}
-            web experiences.
-          </motion.p>
+              <CharReveal
+                text="Sheikh"
+                className="block text-[clamp(4rem,12vw,9rem)] bg-gradient-to-r from-amber-400 via-rose-400 to-teal-400 bg-clip-text text-white  
+                "
+                delay={0.7}
+              />
+            </h1>
+          </div>
 
-          <motion.p
-            variants={item}
-            className="text-sm text-white/30 mb-10 tracking-wide"
+          {/* Subtitle */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2, duration: 0.7 }}
+            className="mb-4"
           >
-            Building the future, one line at a time.
+            <p className="text-lg sm:text-xl text-white/40 max-w-lg mx-auto leading-relaxed">
+              MERN Stack developer crafting{" "}
+              <span className="text-white/80 font-medium">
+                {typingText}
+                <span
+                  className={`inline-block w-[2px] h-[1em] bg-amber-500 ml-0.5 align-middle transition-opacity duration-75 ${
+                    showCursor ? "opacity-100" : "opacity-0"
+                  }`}
+                />
+              </span>{" "}
+              web experiences.
+            </p>
+          </motion.div>
+
+          {/* Tagline */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5, duration: 0.6 }}
+            className="text-xs font-mono text-white/20 tracking-[0.25em] uppercase mb-12"
+          >
+            Code. Create. Ship.
           </motion.p>
 
           {/* CTA Buttons */}
           <motion.div
-            variants={item}
-            className="flex flex-col sm:flex-row items-center justify-center gap-3"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.7, duration: 0.6 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            {/* Primary — magnetic */}
             <MagneticButton
               onClick={() => navigate("/projects")}
-              className="group flex items-center gap-2 px-7 py-3.5 rounded-full bg-white text-black text-sm font-semibold hover:bg-indigo-100 transition-colors duration-200 shadow-lg shadow-black/20"
+              className="group flex items-center gap-3 px-8 py-4 rounded-full bg-white text-black text-sm font-semibold hover:bg-amber-100 transition-all duration-300 shadow-2xl shadow-white/10"
             >
               View My Work
               <ArrowRight
                 size={16}
-                className="group-hover:translate-x-0.5 transition-transform duration-200"
+                className="group-hover:translate-x-1 transition-transform duration-300"
               />
             </MagneticButton>
 
-            {/* Secondary */}
-            <motion.button
+            <MagneticButton
               onClick={() => navigate("/contact")}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              className="px-7 py-3.5 rounded-full border border-white/[0.12] text-white/70 text-sm font-medium hover:border-white/25 hover:text-white hover:bg-white/[0.04] transition-all duration-200"
+              className="group flex items-center gap-3 px-8 py-4 rounded-full border border-white/[0.1] text-white/60 text-sm font-medium hover:border-white/25 hover:text-white hover:bg-white/[0.03] transition-all duration-300"
             >
               Get in Touch
-            </motion.button>
+              <ArrowUpRight
+                size={14}
+                className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300"
+              />
+            </MagneticButton>
           </motion.div>
-        </motion.div>
+        </div>
+
+        {/* Floating elements */}
+        <FloatingBadge
+          className="absolute top-[18%] left-[8%] hidden lg:block"
+          delay={2}
+        >
+          <div className="glass rounded-2xl px-4 py-3 flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-amber-600/20 flex items-center justify-center">
+              <SiReact size={16} className="text-[#61DAFB]" />
+            </div>
+            <div>
+              <div className="text-[10px] text-white/30">Favorite</div>
+              <div className="text-xs text-white/70 font-medium">React</div>
+            </div>
+          </div>
+        </FloatingBadge>
+
+        <FloatingBadge
+          className="absolute top-[22%] right-[10%] hidden lg:block"
+          delay={2.5}
+        >
+          <div className="glass rounded-2xl px-4 py-3 flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
+              <SiNodedotjs size={16} className="text-[#4CAF50]" />
+            </div>
+            <div>
+              <div className="text-[10px] text-white/30">Backend</div>
+              <div className="text-xs text-white/70 font-medium">Node.js</div>
+            </div>
+          </div>
+        </FloatingBadge>
+
+        <FloatingBadge
+          className="absolute bottom-[20%] left-[12%] hidden lg:block"
+          delay={3}
+        >
+          <div className="glass rounded-2xl px-4 py-3">
+            <div className="text-[10px] text-white/30 font-mono">projects</div>
+            <div className="text-lg font-display font-bold text-white">15+</div>
+          </div>
+        </FloatingBadge>
+
+        <FloatingBadge
+          className="absolute bottom-[25%] right-[8%] hidden lg:block"
+          delay={3.3}
+        >
+          <div className="glass rounded-2xl px-4 py-3">
+            <div className="text-[10px] text-white/30 font-mono">experience</div>
+            <div className="text-lg font-display font-bold text-white">1+ yr</div>
+          </div>
+        </FloatingBadge>
 
         {/* Scroll indicator */}
         <motion.div
-          className="absolute bottom-[-60px] left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5"
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.8, duration: 0.8 }}
+          transition={{ delay: 2.2, duration: 0.8 }}
         >
-          <motion.span
-            className="text-[10px] text-white/25 tracking-[0.2em] uppercase"
-          >
+          <span className="text-[10px] font-mono text-white/20 tracking-[0.3em] uppercase">
             Scroll
-          </motion.span>
+          </span>
           <motion.div
-            animate={{ y: [0, 5, 0] }}
-            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <ChevronDown size={16} className="text-white/20" />
-          </motion.div>
+            className="w-[1px] h-8 bg-gradient-to-b from-white/30 to-transparent"
+            animate={{ scaleY: [0, 1, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            style={{ transformOrigin: "top" }}
+          />
         </motion.div>
+      </motion.section>
+
+      {/* MARQUEE */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+      >
+        <MarqueeStrip />
       </motion.div>
-    </section>
+
+      {/* BRIEF ABOUT STRIP */}
+      <section className="relative py-32 px-6">
+        <div className="max-w-4xl mx-auto">
+          <motion.p
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="font-display text-3xl md:text-5xl font-bold text-white/80 leading-snug"
+          >
+            I design and build{" "}
+            <span className="bg-gradient-to-r from-amber-400 to-rose-400 bg-clip-text text-transparent">digital products</span> that
+            are fast, accessible, and a joy to use.
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="mt-8"
+          >
+            <button
+              onClick={() => navigate("/about")}
+              className="group inline-flex items-center gap-2 text-sm font-medium text-white/40 hover:text-white transition-colors duration-300"
+            >
+              More about me
+              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform duration-300 text-amber-500" />
+            </button>
+          </motion.div>
+        </div>
+      </section>
+    </div>
   );
 }
