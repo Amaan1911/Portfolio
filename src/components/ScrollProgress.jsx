@@ -8,8 +8,7 @@ export function ScrollProgress() {
   useEffect(() => {
     const update = () => {
       const { scrollY } = window;
-      const scrollable =
-        document.documentElement.scrollHeight - window.innerHeight;
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
       setRawProgress(scrollable > 0 ? scrollY / scrollable : 0);
     };
     window.addEventListener("scroll", update, { passive: true });
@@ -18,11 +17,9 @@ export function ScrollProgress() {
   }, []);
 
   return (
-    <div className="fixed top-0 left-0 right-0 h-[2px] z-[100] bg-transparent">
-      <motion.div
-        className="h-full bg-gradient-to-r from-amber-500 via-rose-500 to-teal-400 origin-left"
-        style={{ scaleX: progress }}
-      />
+    <div className="fixed top-0 left-0 right-0 h-[3px] z-[100] bg-transparent">
+      <motion.div className="h-full origin-left"
+        style={{ scaleX: progress, background: "linear-gradient(90deg, #7c4dff, #00c9a7, #ff6b35)", boxShadow: "0 0 12px rgba(124,77,255,0.3)" }} />
     </div>
   );
 }
