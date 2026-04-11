@@ -89,7 +89,7 @@ const featuredProjects = [
 function HorizontalProjects() {
   const containerRef = useRef(null); const navigate = useNavigate();
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
-  
+
   // Moving the row left by its entire width, but returning 1 screen-width back so the last item is in full view
   const x = useTransform(scrollYProgress, [0, 1], ["0%", "calc(-100% + 100vw)"]);
 
@@ -216,19 +216,9 @@ export default function Home() {
         </div>
       </section>
 
-      <HorizontalProjects />
+      {/* <HorizontalProjects /> */}
 
-      <section className="py-20 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <MagneticButton onClick={() => navigate("/projects")}
-              className="group flex items-center gap-3 px-8 py-4 rounded-full border border-[#7c4dff]/15 text-[#1a1a2e]/50 text-sm font-medium hover:border-[#7c4dff]/30 hover:text-[#1a1a2e] hover:bg-[#7c4dff]/[0.04] transition-all duration-300">
-              See All Projects <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform duration-300 text-[#7c4dff]" />
-            </MagneticButton>
-          </motion.div>
-        </div>
-      </section>
+
     </div>
   );
 }
